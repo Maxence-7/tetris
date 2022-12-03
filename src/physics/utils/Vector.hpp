@@ -17,10 +17,10 @@ class Vector {
         Vector(Coordinate_t x, Coordinate_t y, Coordinate_t z) : x(x), y(y), z(z) {};
 
         template<typename T> requires std::integral<T>
-        explicit Vector(std::array<T,3> arr) {Vector(arr[0],arr[1],arr[2])}
+        explicit Vector(std::array<T,3> arr) {Vector(arr[0],arr[1],arr[2]);}
 
         template<typename T> requires std::integral<T>
-        explicit Vector(T arr[3]) {Vector(arr[0],arr[1],arr[2])}
+        explicit Vector(T arr[3]) {Vector(arr[0],arr[1],arr[2]);}
 
         ~Vector() {}
 

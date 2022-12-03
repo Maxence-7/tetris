@@ -1,9 +1,15 @@
 #include "rendering/Renderer.hpp"
  
+Renderer rd;
+
+void renderLoop() {
+    rd.renderRoutine();
+    //glutPostRedisplay();
+}
+
 int main(int argc, char** argv) {
-    Renderer rd = Renderer(argc, argv);
-    rd.setDisplayFunc(displayRect1);
-    rd.refresh();
+    rd = Renderer(argc, argv);
+    rd.setDisplayFunc(renderLoop);
     glutMainLoop();
     return 0;
 }

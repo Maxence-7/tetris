@@ -1,17 +1,18 @@
 # Tetris
 
-## Dependencies 
+## Dependencies
 
-```
+```bash
 sudo apt install -y mesa-common-dev mesa-utils freeglut3-dev 
 ```
 
-## Compilation 
+## Compilation
 
-```
-g++ openGLtest.cpp -lglut -lGLU -lGL; ./a.out
+```bash
+make
+output/main
 ```
 
 ## Utils
 
-https://programminggems.wordpress.com/2019/11/27/getting-started-with-opengl-from-c-c/
+* [OpenGL](https://programminggems.wordpress.com/2019/11/27/getting-started-with-opengl-from-c-c/)
