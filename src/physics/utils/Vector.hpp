@@ -4,7 +4,7 @@
 
 class Vector {
     public:
-        using Coordinate_t = int;
+        using Coordinate_t = double;
     public:
         Coordinate_t x;
         Coordinate_t y;
@@ -52,6 +52,20 @@ class Vector {
         bool operator == (const Vector& pos) const {
             return x==pos.x && y==pos.y && z==pos.z;
         } 
+
+        bool operator < (const Vector & pos) const {
+            if (x >= pos.x)
+            {
+                if (y >= pos.y)
+                {
+                    if (z >= pos.z) {
+                        return false;
+                    }
+                }
+                
+            }
+            return true;
+        }
 
 };
 
