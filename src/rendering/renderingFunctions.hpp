@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <iostream>
 #include "../physics/utils/Vector.hpp"
+#include "texture.hpp"
 
 GLfloat gfPosX = 0.0;
 GLfloat gfDeltaX = .0001;
@@ -68,43 +69,97 @@ void glRect3D(Vector vect1, Vector vect2) {
     glBegin(GL_QUADS);
 
     //front
-    glColor3f(1.0,0.0,0.0);
-    glVertex3f(Y1,Y2,X2);
-    glVertex3f(Y1,Z2,X2);
-    glVertex3f(Z1,Z2,X2);
-    glVertex3f(Z1,Y2,X2);
+    glColor3f(1.0,0.0,0.0); //red
+    glTexCoord2i(0,0);glVertex3f(Y1,Y2,X2);
+    glTexCoord2i(1,0);glVertex3f(Y1,Z2,X2);
+    glTexCoord2i(1,1);glVertex3f(Z1,Z2,X2);
+    glTexCoord2i(0,1);glVertex3f(Z1,Y2,X2);
     //back
-    glColor3f(0.0,1.0,0.0);
-    glVertex3f(Z1,Y2,X1);
-    glVertex3f(Z1,Z2,X1);
-    glVertex3f(Y1,Z2,X1);
-    glVertex3f(Y1,Y2,X1);
+    glColor3f(0.0,1.0,0.0); //green
+    glTexCoord2i(0,0);glVertex3f(Z1,Y2,X1);
+    glTexCoord2i(1,0);glVertex3f(Z1,Z2,X1);
+    glTexCoord2i(1,1);glVertex3f(Y1,Z2,X1);
+    glTexCoord2i(0,1);glVertex3f(Y1,Y2,X1);
     //right
-    glColor3f(0.0,0.0,1.0);
-    glVertex3f(Z1,Y2,X2);
-    glVertex3f(Z1,Z2,X2);
-    glVertex3f(Z1,Z2,X1);
-    glVertex3f(Z1,Y2,X1);
+    glColor3f(0.0,0.0,1.0); //blue
+    glTexCoord2i(0,0);glVertex3f(Z1,Y2,X2);
+    glTexCoord2i(1,0);glVertex3f(Z1,Z2,X2);
+    glTexCoord2i(1,1);glVertex3f(Z1,Z2,X1);
+    glTexCoord2i(0,1);glVertex3f(Z1,Y2,X1);
     //left
     glColor3f(1.0,1.0,0.0);
-    glVertex3f(Y1,Y2,X1);
-    glVertex3f(Y1,Z2,X1);
-    glVertex3f(Y1,Z2,X2);
-    glVertex3f(Y1,Y2,X2);
+    glTexCoord2i(0,0);glVertex3f(Y1,Y2,X1);
+    glTexCoord2i(1,0);glVertex3f(Y1,Z2,X1);
+    glTexCoord2i(1,1);glVertex3f(Y1,Z2,X2);
+    glTexCoord2i(0,1);glVertex3f(Y1,Y2,X2);
     //top
     glColor3f(0.0,1.0,0.0);
-    glVertex3f(Y1,Y2,X1);
-    glVertex3f(Y1,Y2,X2);
-    glVertex3f(Z1,Y2,X2);
-    glVertex3f(Z1,Y2,X1);
+    glTexCoord2i(0,0);glVertex3f(Y1,Y2,X1);
+    glTexCoord2i(1,0);glVertex3f(Y1,Y2,X2);
+    glTexCoord2i(1,1);glVertex3f(Z1,Y2,X2);
+    glTexCoord2i(0,1);glVertex3f(Z1,Y2,X1);
     //bottom
     glColor3f(1.0,0.0,1.0);
-    glVertex3f(Y1,Z2,X1);
-    glVertex3f(Y1,Z2,X2);
-    glVertex3f(Z1,Z2,X2);
-    glVertex3f(Z1,Z2,X1);
+    glTexCoord2i(0,0);glVertex3f(Y1,Z2,X1);
+    glTexCoord2i(1,0);glVertex3f(Y1,Z2,X2);
+    glTexCoord2i(1,1);glVertex3f(Z1,Z2,X2);
+    glTexCoord2i(0,1);glVertex3f(Z1,Z2,X1);
 
     glEnd();
 
     glutSwapBuffers();
+}
+
+void Draw2()
+{ 	
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 	//Efface le framebuffer et le depthbuffer
+glMatrixMode(GL_MODELVIEW); 	//Un petit gluLookAt()...
+glLoadIdentity();
+gluLookAt(3,2,3,0,0,0,0,1,0);
+glBegin(GL_QUADS); 	//Et c'est parti pour le cube !
+
+    glTexCoord2i(0,0);glVertex3i(-1,-1,-1);
+    glTexCoord2i(1,0);glVertex3i(+1,-1,-1);
+    glTexCoord2i(1,1);glVertex3i(+1,+1,-1);
+    glTexCoord2i(0,1);glVertex3i(-1,+1,-1);
+
+	//1 face
+
+    glTexCoord2i(0,0);glVertex3i(-1,-1,+1);
+    glTexCoord2i(1,0);glVertex3i(+1,-1,+1);
+    glTexCoord2i(1,1);glVertex3i(+1,+1,+1);
+    glTexCoord2i(0,1);glVertex3i(-1,+1,+1);
+
+	//2 faces
+
+    glTexCoord2i(0,0);glVertex3i(+1,-1,-1);
+    glTexCoord2i(1,0);glVertex3i(+1,-1,+1);
+    glTexCoord2i(1,1);glVertex3i(+1,+1,+1);
+    glTexCoord2i(0,1);glVertex3i(+1,+1,-1);
+
+	//3 faces
+
+    glTexCoord2i(0,0);glVertex3i(-1,-1,-1);
+    glTexCoord2i(1,0);glVertex3i(-1,-1,+1);
+    glTexCoord2i(1,1);glVertex3i(-1,+1,+1);
+    glTexCoord2i(0,1);glVertex3i(-1,+1,-1);
+
+	//4 faces
+
+    glTexCoord2i(1,0);glVertex3i(-1,+1,-1);
+    glTexCoord2i(1,1);glVertex3i(+1,+1,-1);
+    glTexCoord2i(0,1);glVertex3i(+1,+1,+1);
+    glTexCoord2i(0,0);glVertex3i(-1,+1,+1);
+
+	//5 faces
+
+    glTexCoord2i(1,0);glVertex3i(-1,-1,+1);
+    glTexCoord2i(1,1);glVertex3i(+1,-1,+1);
+    glTexCoord2i(0,1);glVertex3i(+1,-1,-1);
+    glTexCoord2i(0,0);glVertex3i(-1,-1,-1);
+
+	//6 faces
+glEnd(); 	
+glutSwapBuffers(); 	//glutSwapBuffers(); pour GLUT
+glutPostRedisplay(); 	//Uniquement pour GLUT
 }
