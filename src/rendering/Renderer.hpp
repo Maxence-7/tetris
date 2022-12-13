@@ -60,9 +60,11 @@ class Renderer {
             if (MODE == _3D) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glLoadIdentity();
+                // Camera positionning
                 glTranslatef(-10,-15,-35);
                 glRotatef(-70,1,0,0);
                 glRotatef(2.5,0,1,0);
+                // Animation (rotation)
                 glRotatef(angle,0,0,1);
 
                 for (auto const& [vec,col] : map) {
@@ -115,8 +117,13 @@ class Renderer {
             glColor3f(col.r,col.g,col.b);
             vBitmapOutput(0,0.9,"Tetris",GLUT_BITMAP_HELVETICA_18);
             vBitmapOutput(0,0.8,"Score :",GLUT_BITMAP_HELVETICA_18);
-            //std::string score = std::to_string(gc.getScore());
-            //vBitmapOutput(0,0.9,score,GLUT_BITMAP_HELVETICA_18);
+            std::string score = std::to_string(gc->getScore());
+            vBitmapOutput(0.5,0.8,score.data(),GLUT_BITMAP_HELVETICA_18);
+
+            vBitmapOutput(0,0.7,"Debug state :",GLUT_BITMAP_HELVETICA_18);
+            std::string state = std::to_string((int)gc->getState());
+            vBitmapOutput(0.75,0.7,state.data(),GLUT_BITMAP_HELVETICA_18);
+
 
             glFlush();
         }
