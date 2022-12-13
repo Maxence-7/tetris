@@ -13,6 +13,7 @@ class BlockContainer {
         Vector m_size;
         Container_t m_data;
     public:
+        // Constructors
         BlockContainer(Vector size) : m_size(size) {}
         explicit BlockContainer(Container_t data) : m_data(data) {};
         
@@ -20,6 +21,7 @@ class BlockContainer {
 
         ~BlockContainer() {}
 
+        // Methods
         void append(const BlockContainer& cont) {
             m_data.insert(cont.m_data.begin(),cont.m_data.end());
         }
@@ -56,18 +58,10 @@ class BlockContainer {
             return true;
         }
 
-};
+        // Getters
 
-class PositionOccupiedException : public std::exception {
-    public:
-        char* what() {
-            return "B";
+        Vector getSize() const {
+            return m_size;
         }
-};
 
-class PositionUnOccupiedException : public std::exception {
-    public:
-        char* what() {
-            return "A";
-        }
 };

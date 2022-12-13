@@ -22,12 +22,9 @@ class Vector {
         template<typename T> requires std::integral<T>
         explicit Vector(T arr[3]) {Vector(arr[0],arr[1],arr[2]);}
 
-        ~Vector() {}
+        ~Vector() {} 
 
-        /*static const Vector& UnitVector_X(1,0,0);
-        static const Vector& UnitVector_Y(0,1,0);
-        static const Vector& UnitVector_Z(0,0,1);*/ 
-
+        // Operator Overload
         Vector operator+ (const Vector& pos) const {
             return Vector(x+pos.x,y+pos.y,z+pos.z);
         }
@@ -51,8 +48,18 @@ class Vector {
          */
         bool operator == (const Vector& pos) const {
             return x==pos.x && y==pos.y && z==pos.z;
-        } 
+        }
+        
+        template<typename T>
+        Vector operator *(const T& v) {
+            Vector(x*v,y*v,z*v);
+        }   
 
+        /**
+         * @brief Operator compare used by the std::map object. Not a real compare operator 
+         * @param pos Another Vector
+         * @return Boolean
+         */
         bool operator < (const Vector & pos) const {
             if (x >= pos.x)
             {
