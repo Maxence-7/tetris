@@ -79,7 +79,7 @@ class Renderer {
                     for (int y = 0; y < 5; y++) {
                         for (int x = 0; x < 5; x++) {
                             glBegin(GL_QUADS);
-                            col = Color(x/5.0,y/5.0,z/24.0);
+                            //col = Color(x/5.0,y/5.0,z/24.0);
                             absoluteDrawRect3D(v1,v2,col);
                             glEnd();
                             glTranslatef(offset,0,0);
@@ -114,6 +114,9 @@ class Renderer {
             Color col = Color(0.7,0.7,0.7);
             glColor3f(col.r,col.g,col.b);
             vBitmapOutput(0,0.9,"Tetris",GLUT_BITMAP_HELVETICA_18);
+            vBitmapOutput(0,0.8,"Score :",GLUT_BITMAP_HELVETICA_18);
+            //std::string score = std::to_string(gc.getScore());
+            //vBitmapOutput(0,0.9,score,GLUT_BITMAP_HELVETICA_18);
 
             glFlush();
         }
@@ -161,8 +164,7 @@ Renderer::Renderer() {
 
 }
 
-Renderer::Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc) {
-    gc = gc;
+Renderer::Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc) : gc(gc) {
     glutInit(&argc, argv);
     glutInitWindowSize(600, 900);
     glutInitWindowPosition(100, 100);
@@ -178,7 +180,7 @@ Renderer::Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc) {
         glutReshapeFunc(reshape);
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-        //initTexture();
+        initTexture();
         glutTimerFunc(1000/FPS,timer,0);
     }
 

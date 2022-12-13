@@ -5,12 +5,20 @@
 
 GLubyte Texture[16] = {
     0,0,0,0, 0xFF,0xFF,0xFF,0xFF,
-    0xFF,0xFF,0xFF,0xFF, 0,0,0,0
+    0xFF,0xFF,0xFF,0xFF, 0,0,0,0,
+    
 };
 	//Image (2x2)
+
+GLubyte Texture2[64] = {
+    0,0,0,0, 0xFF,0xFF,0xFF,0xFF,
+    0xFF,0xFF,0xFF,0xFF, 0,0,0,0,
+    
+};
+
 GLuint Nom;
 void initTexture() { 	
-    //glClearColor(.5,.5,.5,0); 	//Change la couleur du fond
+    glClearColor(0,0,0,0); 	//Change la couleur du fond
     glEnable(GL_DEPTH_TEST); 	//Active le depth test
     glEnable(GL_TEXTURE_2D); 	//Active le texturing
     glGenTextures(1,&Nom); 	//G�n�re un n� de texture
