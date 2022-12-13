@@ -21,16 +21,13 @@ class Renderer {
         double offset = 2.3/2;
         unsigned int MODE = _3D;
 
-        int parentWin;
-        int scoreWin;
-
         Vector v1 = Vector(0,0,0);
         Vector v2 = Vector(2,2,-2);
 
         void absoluteDrawRect2D(int x1, int y1, int x2, int y2, Color col) {
             double width = glutGet(GLUT_WINDOW_WIDTH);
             double height = glutGet(GLUT_WINDOW_HEIGHT);
-            glColor3f(0.2,0.2,0.2);
+            glColor3f(col.r,col.g,col.b);
             glRectf(2*x1/width-1,2*y1/height-1,2*x2/width-1,2*y2/height-1);
         }
 
@@ -42,6 +39,8 @@ class Renderer {
         }
 
     public:
+        int parentWin;
+        int scoreWin;
         Renderer();
         Renderer(int argc, char** argv);
         ~Renderer();
@@ -51,7 +50,7 @@ class Renderer {
             glutDisplayFunc(displayFunction);
         }
 
-        void renderRoutine() {
+        void renderRoutineGrid() {
             glutSetWindow(parentWin);
             Color col = Color(1,0,0);
             if (MODE == _3D) {
@@ -67,6 +66,7 @@ class Renderer {
                     for (int y = 0; y < 5; y++) {
                         for (int x = 0; x < 5; x++) {
                             glBegin(GL_QUADS);
+                            col = Color(x/5.0,y/5.0,z/24.0);
                             absoluteDrawRect3D(v1,v2,col);
                             glEnd();
                             glTranslatef(offset,0,0);
@@ -89,8 +89,20 @@ class Renderer {
                 }
             }
             glFlush();
-
+        }
+        void renderRoutineScore() {
             glutSetWindow(scoreWin);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glLoadIdentity();
+
+            glClearColor(0,0,0,0);
+	        glClear(GL_COLOR_BUFFER_BIT);
+        
+            Color col = Color(0.7,0.7,0.7);
+            glColor3f(col.r,col.g,col.b);
+            vBitmapOutput(0,0.9,"Tetris",GLUT_BITMAP_HELVETICA_18);
+
+            glFlush();
         }
 };
 
@@ -100,6 +112,28 @@ void reshape(int w, int h) {
     glLoadIdentity();
     gluPerspective(60,1,2.0,50.0);
     glMatrixMode(GL_MODELVIEW);
+}
+
+void reshape2(int w, int h) {
+	float L; 
+	float H; 
+
+	glViewport(0,0,w,h); 
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity(); 
+	if (w<=h) 
+	{ 
+	  if (w==0) H=900; 
+	  else H=(GLfloat) (300*h/w); 
+	  L=300; 
+	} 
+	else 
+	{ 
+	  H=900; 
+	  if (h==0) L=300; 
+	  else L=(GLfloat) (900*w/h); 
+	} 
+	gluOrtho2D(-L/2,L/2,-H/2,H/2); 
 }
 
 void timer(int) {
@@ -130,9 +164,20 @@ Renderer::Renderer(int argc, char** argv) {
         glutReshapeFunc(reshape);
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-        initTexture();
+        //initTexture();
         glutTimerFunc(1000/FPS,timer,0);
-    }    
+    }
+
+
+    glutSetWindow(scoreWin);
+    if (MODE == _3D) {
+        glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
+        glutReshapeFunc(reshape2);
+        //glEnable(GL_DEPTH_TEST);
+        //glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+        //initTexture();
+        glutTimerFunc(1000/FPS,timer,0);
+    } 
 }
 
 Renderer::~Renderer() {

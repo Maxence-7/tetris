@@ -2,8 +2,13 @@
  
 Renderer rd;
 
-void renderLoop() {
-    rd.renderRoutine();
+void renderLoopGrid() {
+    rd.renderRoutineGrid();
+    //glutPostRedisplay();
+}
+
+void renderLoopScore() {
+    rd.renderRoutineScore();
     //glutPostRedisplay();
 }
 
@@ -21,7 +26,12 @@ void processNormalKeys(unsigned char key, int x, int y) {
 
 int main(int argc, char** argv) {
     rd = Renderer(argc, argv);
-    rd.setDisplayFunc(renderLoop);
+    glutSetWindow(rd.parentWin);
+    rd.setDisplayFunc(renderLoopGrid);
+    glutSetWindow(rd.scoreWin);
+    rd.setDisplayFunc(renderLoopScore);
+    glutSetWindow(rd.parentWin);
+
     glutKeyboardFunc(processNormalKeys);
     glutMainLoop();
     return 0;

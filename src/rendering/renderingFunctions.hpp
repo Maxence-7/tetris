@@ -2,48 +2,10 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include <cstring>
 #include "../physics/utils/Vector.hpp"
 #include "texture.hpp"
 #include "../physics/utils/Color.hpp"
-
-GLfloat gfPosX = 0.0;
-GLfloat gfDeltaX = .0001;
-
-void Draw() {
-    int width = glutGet(GLUT_WINDOW_WIDTH);
-    int height = glutGet(GLUT_WINDOW_HEIGHT);
-
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
-		glVertex3f(gfPosX, 0.25, 0.0);
-		glVertex3f(1.0 - gfPosX, 0.75,0.0);
-	glEnd();
-	glFlush();
-	gfPosX += gfDeltaX;
-	if (gfPosX >= 1.0 || gfPosX <= 0.0) {
-		gfDeltaX = -gfDeltaX;
-	}
-	glutPostRedisplay();
-}
-
-// Draw a rectangle
-void displayRect1(void) {
-    // Size of rectangle in absolute pixels
-    double posXabs = 200;
-    double posYabs = 200;
-
-    double width = glutGet(GLUT_WINDOW_WIDTH);
-    double height = glutGet(GLUT_WINDOW_HEIGHT);
-    double posX = posXabs/width;
-    double posY = posYabs/height;
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glRectf(0,0,posX,posY);
-    glFlush();
-
-    glutPostRedisplay();
-}
 
 void drawGrid(void) {
     double width = glutGet(GLUT_WINDOW_WIDTH);
@@ -112,56 +74,20 @@ void glRect3D(Vector& vect1, Vector& vect2, Color col) {
     glutSwapBuffers();
 }
 
-void Draw2()
-{ 	
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 	//Efface le framebuffer et le depthbuffer
-glMatrixMode(GL_MODELVIEW); 	//Un petit gluLookAt()...
-glLoadIdentity();
-gluLookAt(3,2,3,0,0,0,0,1,0);
-glBegin(GL_QUADS); 	//Et c'est parti pour le cube !
+void vBitmapOutput(double x, double y, char *string, void *font) {
+	int len,i; // len donne la longueur de la chaîne de caractères
 
-    glTexCoord2i(0,0);glVertex3i(-1,-1,-1);
-    glTexCoord2i(1,0);glVertex3i(+1,-1,-1);
-    glTexCoord2i(1,1);glVertex3i(+1,+1,-1);
-    glTexCoord2i(0,1);glVertex3i(-1,+1,-1);
+	glRasterPos2f(x,y); // Positionne le premier caractère de la chaîne
+	len = (int) strlen(string); // Calcule la longueur de la chaîne
+	for (i = 0; i < len; i++) glutBitmapCharacter(font,string[i]); // Affiche chaque caractère de la chaîne
+}
 
-	//1 face
+void vStrokeOutput(GLfloat x, GLfloat y, char *string, void *font) {
+	char *p;
 
-    glTexCoord2i(0,0);glVertex3i(-1,-1,+1);
-    glTexCoord2i(1,0);glVertex3i(+1,-1,+1);
-    glTexCoord2i(1,1);glVertex3i(+1,+1,+1);
-    glTexCoord2i(0,1);glVertex3i(-1,+1,+1);
-
-	//2 faces
-
-    glTexCoord2i(0,0);glVertex3i(+1,-1,-1);
-    glTexCoord2i(1,0);glVertex3i(+1,-1,+1);
-    glTexCoord2i(1,1);glVertex3i(+1,+1,+1);
-    glTexCoord2i(0,1);glVertex3i(+1,+1,-1);
-
-	//3 faces
-
-    glTexCoord2i(0,0);glVertex3i(-1,-1,-1);
-    glTexCoord2i(1,0);glVertex3i(-1,-1,+1);
-    glTexCoord2i(1,1);glVertex3i(-1,+1,+1);
-    glTexCoord2i(0,1);glVertex3i(-1,+1,-1);
-
-	//4 faces
-
-    glTexCoord2i(1,0);glVertex3i(-1,+1,-1);
-    glTexCoord2i(1,1);glVertex3i(+1,+1,-1);
-    glTexCoord2i(0,1);glVertex3i(+1,+1,+1);
-    glTexCoord2i(0,0);glVertex3i(-1,+1,+1);
-
-	//5 faces
-
-    glTexCoord2i(1,0);glVertex3i(-1,-1,+1);
-    glTexCoord2i(1,1);glVertex3i(+1,-1,+1);
-    glTexCoord2i(0,1);glVertex3i(+1,-1,-1);
-    glTexCoord2i(0,0);glVertex3i(-1,-1,-1);
-
-	//6 faces
-glEnd(); 	
-glutSwapBuffers(); 	//glutSwapBuffers(); pour GLUT
-glutPostRedisplay(); 	//Uniquement pour GLUT
+	glPushMatrix();	// glPushMatrix et glPopMatrix sont utilisées pour sauvegarder 
+			// et restaurer les systèmes de coordonnées non translatés
+	glTranslatef(x, y, 0); // Positionne le premier caractère de la chaîne
+	for (p = string; *p; p++) glutStrokeCharacter(font, *p); // Affiche chaque caractère de la chaîne
+	glPopMatrix();
 }
