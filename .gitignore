@@ -4,3 +4,5 @@ output/
 *.o
 lib
 include
+*.svg
+.gitignore

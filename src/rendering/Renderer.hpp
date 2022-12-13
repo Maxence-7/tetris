@@ -51,7 +51,7 @@ class Renderer {
         if (MODE == _3D) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glLoadIdentity();
-            glTranslatef(0,0,-30);
+            glTranslatef(0,-10,-30);
             glRotatef(-60,1,0,0);
             glRotatef(angle,0,0,1);
 
@@ -104,9 +104,18 @@ class Renderer {
                 ex.z = z*offset;
             }*/
 
-            Vector u = Vector(0,2*offset,0);
-            absoluteDrawRect3D(v1,v2);
-            //absoluteDrawRect3D(v1+u,v2+u);
+            Vector u1 = Vector(offset,0,0);
+            Vector u2 = Vector(0,offset,0);
+            Vector u3 = Vector(0,0,offset);
+            for (int i = 0; i < 14; i++) {
+                u1.x = i*offset;
+                absoluteDrawRect3D(v1+u1,v2+u1);
+                absoluteDrawRect3D(v1+u1+u2+u3,v2+u1+u2+u3);
+                //absoluteDrawRect3D(v1+u1-u2+u3,v2+u1-u2+u3);
+                //absoluteDrawRect3D(v1+u1+u2-u3,v2+u1+u2-u3);
+                absoluteDrawRect3D(v1+u1-u2-u3,v2+u1-u2-u3);
+            }
+            //absoluteDrawRect3D(v1+u1,v2+u1);
         }
         if (MODE == _2D) {
             glClear(GL_COLOR_BUFFER_BIT);
