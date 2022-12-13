@@ -11,7 +11,7 @@
 #define _2D 1000
 #define _3D 1001
 
-#define FPS 30
+#define FPS 60
 
 double angle = 60.0;
 
@@ -42,92 +42,46 @@ class Renderer {
         Renderer(int argc, char** argv);
         ~Renderer();
 
-    void setDisplayFunc(void (*f)()) {
-        displayFunction = f;
-        glutDisplayFunc(displayFunction);
-    }
-
-    void renderRoutine() {
-        if (MODE == _3D) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glLoadIdentity();
-            glTranslatef(0,-10,-30);
-            glRotatef(-60,1,0,0);
-            glRotatef(angle,0,0,1);
-
-            Vector ex = Vector(0,0,0);
-            Vector ey = Vector(0,0,0);
-            Vector ez = Vector(0,0,0);
-            //absoluteDrawRect3D(v1,v2);
-            //absoluteDrawRect3D(v1+ex,v2+ex);
-            //absoluteDrawRect3D(v1+ey,v2+ey);
-            //absoluteDrawRect3D(v1+ez,v2+ez);
-
-            /*for (int z = 0; z < 5; z++) {
-                for (int y = 0; y < 5; y++) {
-                    for (int x = 0; x < 5; x++) {
-                        absoluteDrawRect3D(v1,v2);
-                        glTranslatef(offset,0,0);
-                    }
-                    glTranslatef(-5*offset,0,0);
-                    glTranslatef(0,offset,0);
-                }
-                glTranslatef(0,-5*offset,0);
-                glTranslatef(0,0,offset);
-            }
-            //glTranslatef(0,0,-5*offset);*/
-
-            int sizeGrid = 5;
-
-            /*for (int z = 0; z < sizeGrid; z++) {
-                for (int y = 0; y < sizeGrid; y++) {
-                    for (int x = 0; x < sizeGrid; x++) {
-                        ex.x = x*offset;
-                        absoluteDrawRect3D(v1+ex,v2+ex);
-                    }
-                    glTranslatef(offset,0,0);
-                }
-                glTranslatef(-sizeGrid*offset,0,0);
-                glTranslatef(0,offset,0);
-            }*/
-
-            /*for (int z = 0; z < sizeGrid; z++) {
-                for (int y = 0; y < sizeGrid; y++) {
-                    for (int x = 0; x < sizeGrid; x++) {
-                        ex.x = x*offset;
-                        absoluteDrawRect3D(v1+ex+ey+ez,v2+ex+ey+ez);
-                    }
-                    //glRotatef(45,0,1,0);
-                    ex.y = y*offset;
-                }
-                //glRotatef(90,1,0,0);
-                ex.z = z*offset;
-            }*/
-
-            Vector u1 = Vector(offset,0,0);
-            Vector u2 = Vector(0,offset,0);
-            Vector u3 = Vector(0,0,offset);
-            for (int i = 0; i < 14; i++) {
-                u1.x = i*offset;
-                absoluteDrawRect3D(v1+u1,v2+u1);
-                absoluteDrawRect3D(v1+u1+u2+u3,v2+u1+u2+u3);
-                //absoluteDrawRect3D(v1+u1-u2+u3,v2+u1-u2+u3);
-                //absoluteDrawRect3D(v1+u1+u2-u3,v2+u1+u2-u3);
-                absoluteDrawRect3D(v1+u1-u2-u3,v2+u1-u2-u3);
-            }
-            //absoluteDrawRect3D(v1+u1,v2+u1);
+        void setDisplayFunc(void (*f)()) {
+            displayFunction = f;
+            glutDisplayFunc(displayFunction);
         }
-        if (MODE == _2D) {
-            glClear(GL_COLOR_BUFFER_BIT);
-            for (int x = 50; x<550 ; x+=50) {
-                for (int y = 50; y<850 ; y+=50) {
-                    absoluteDrawRect2D(x,y,x+45,y+45);
+
+        void renderRoutine() {
+            if (MODE == _3D) {
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glLoadIdentity();
+                glTranslatef(0,-15,-50);
+                glRotatef(-60,1,0,0);
+                glRotatef(angle,0,0,1);
+                
+                for (int z = 0; z < 24; z++) {
+                    for (int y = 0; y < 5; y++) {
+                        for (int x = 0; x < 5; x++) {
+                            glBegin(GL_QUADS);
+                            absoluteDrawRect3D(v1,v2);
+                            glEnd();
+                            glTranslatef(offset,0,0);
+                        }
+                        glTranslatef(-5*offset,0,0);
+                        glTranslatef(0,offset,0);
+                    }
+                    glTranslatef(0,-5*offset,0);
+                    glTranslatef(0,0,offset);
+                }
+                glTranslatef(0,0,-5*offset);
+
+            }
+            if (MODE == _2D) {
+                glClear(GL_COLOR_BUFFER_BIT);
+                for (int x = 50; x<550 ; x+=50) {
+                    for (int y = 50; y<850 ; y+=50) {
+                        absoluteDrawRect2D(x,y,x+45,y+45);
+                    }
                 }
             }
-        //glRectf(0,0,-0.5,0.5);
+            glFlush();
         }
-        glFlush();
-    }
 };
 
 void reshape(int w, int h) {
@@ -141,7 +95,7 @@ void reshape(int w, int h) {
 void timer(int) {
     glutPostRedisplay();
     glutTimerFunc(1000/FPS,timer,0);
-    angle+=3;
+    angle+=0.5;
     if (angle>360.0)
         angle-=360.0;
 }

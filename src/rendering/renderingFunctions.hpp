@@ -66,7 +66,7 @@ void glRect3D(Vector vect1, Vector vect2) {
     double Y2 = vect2.y;
     double Z2 = vect2.z;
 
-    glBegin(GL_QUADS);
+    //glBegin(GL_QUADS);
 
     //front
     glColor3f(1.0,0.0,0.0); //red
@@ -105,7 +105,7 @@ void glRect3D(Vector vect1, Vector vect2) {
     glTexCoord2i(1,1);glVertex3f(Z1,Z2,X2);
     glTexCoord2i(0,1);glVertex3f(Z1,Z2,X1);
 
-    glEnd();
+    //glEnd();
 
     glutSwapBuffers();
 }
