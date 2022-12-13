@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./renderingFunctions.hpp"
-#include "../physics/utils/Grid.hpp"
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <vector>
@@ -20,8 +19,6 @@ class Renderer {
     private:
         void (*displayFunction)();
         //std::vector<Shape*> shapesVector;
-        Grid grid = Grid(550, 850, 50, 50);
-        Grid grid3D = Grid(550, 850, 550, 50, 50, 50);
         double offset = 2.3;
         unsigned int MODE = _3D;
 
@@ -113,8 +110,8 @@ class Renderer {
         }
         if (MODE == _2D) {
             glClear(GL_COLOR_BUFFER_BIT);
-            for (int x = grid.X; x<grid.W ; x+=50) {
-                for (int y = grid.Y; y<grid.H ; y+=50) {
+            for (int x = 50; x<550 ; x+=50) {
+                for (int y = 50; y<850 ; y+=50) {
                     absoluteDrawRect2D(x,y,x+45,y+45);
                 }
             }
