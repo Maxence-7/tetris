@@ -7,6 +7,8 @@
 #include "../physics/utils/Vector.hpp"
 #include "./texture.hpp"
 #include "../physics/utils/Color.hpp"
+#include <memory>
+#include "../physics/GameCore.hpp"
 
 #define _2D 1000
 #define _3D 1001
@@ -17,6 +19,7 @@ double angle = 60.0;
 
 class Renderer {
     private:
+        std::shared_ptr<GameCore> gc;
         void (*displayFunction)();
         double offset = 2.3/2;
         unsigned int MODE = _3D;
@@ -42,7 +45,7 @@ class Renderer {
         int parentWin;
         int scoreWin;
         Renderer();
-        Renderer(int argc, char** argv);
+        Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc);
         ~Renderer();
 
         void setDisplayFunc(void (*f)()) {
@@ -52,6 +55,7 @@ class Renderer {
 
         void renderRoutineGrid() {
             glutSetWindow(parentWin);
+            std::map<Vector, Color> map = gc->render(offset);
             Color col = Color(1,0,0);
             if (MODE == _3D) {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -60,8 +64,17 @@ class Renderer {
                 glRotatef(-70,1,0,0);
                 glRotatef(2.5,0,1,0);
                 glRotatef(angle,0,0,1);
+
+                for (auto const& [vec,col] : map) {
+                    glPushMatrix();
+                    glTranslatef(vec.x,vec.y,vec.z);
+                    glBegin(GL_QUADS);
+                    absoluteDrawRect3D(v1,v2,col);
+                    glEnd();
+                    glPopMatrix();
+                }
                 
-                glTranslatef(-2*offset-0.5,-2*offset-0.5,0);
+                /*glTranslatef(-2*offset-0.5,-2*offset-0.5,0);
                 for (int z = 0; z < 24; z++) {
                     for (int y = 0; y < 5; y++) {
                         for (int x = 0; x < 5; x++) {
@@ -77,7 +90,7 @@ class Renderer {
                     glTranslatef(0,-5*offset,0);
                     glTranslatef(0,0,offset);
                 }
-                glTranslatef(0,0,-5*offset);
+                glTranslatef(0,0,-5*offset);*/
 
             }
             if (MODE == _2D) {
@@ -148,7 +161,8 @@ Renderer::Renderer() {
 
 }
 
-Renderer::Renderer(int argc, char** argv) {
+Renderer::Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc) {
+    gc = gc;
     glutInit(&argc, argv);
     glutInitWindowSize(600, 900);
     glutInitWindowPosition(100, 100);

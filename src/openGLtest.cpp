@@ -83,7 +83,7 @@ void proccessSpecialKeys(int key, int, int) {
 
 int main(int argc, char** argv) {
     std::thread coreThread(&GameCore::startThread,corePtr);
-    rd = Renderer(argc, argv);
+    rd = Renderer(argc, argv, corePtr);
     glutSetWindow(rd.parentWin);
     rd.setDisplayFunc(renderLoopGrid);
     glutSetWindow(rd.scoreWin);
