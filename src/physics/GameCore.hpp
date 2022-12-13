@@ -47,19 +47,6 @@ class GameCore {
         ~GameCore() {}
         
 
-
-        /*
-                        for (auto const& [vec,col] : core.) {
-                    glPushMatrix();
-                    glTranslatef(vec.x,vec.y,vec.z);
-                    glBegin(GL_QUADS);
-                    absoluteDrawRect3D(v1,v2);
-                    glEnd();
-                    glPopMatrix();
-                }*/
-        Score_t getScore() const {
-            return m_score;
-        }
         std::map<Vector,BlockContainer::Value_t> render(double offset) const {
             std::map<Vector,BlockContainer::Value_t> out;
             Vector size = m_grid.getSize();
@@ -83,15 +70,19 @@ class GameCore {
             return m_state;
         }
 
+        
+        Score_t getScore() const {
+            return m_score;
+        }
+
+        Vector getSize() const {
+            return m_grid.getSize();
+        }
+
+
     static void startThread(std::shared_ptr<GameCore> corePtr) {
         return corePtr->start();
     }
-
-/*    static void startThread(GameCore& core) {
-        return core.start();
-    }
-  */      
-
 
     private:
         void turn() {
@@ -139,7 +130,7 @@ class GameCore {
         
     public:
         void translate(const Vector& v) {
-            if(m_state == State::MOVING_BLOCK) m_curShape.translate(v);
+            if(m_state == State::MOVING_BLOCK && m_curShape.canTranslate(v,m_grid)) m_curShape.translate(v);
         }
 
         void rotate(Shape::ROTATION_AXIS ax, Shape::ROTATION_DIRECTION dir) {
@@ -159,7 +150,7 @@ class GameCore {
             Vector shPos = m_curShape.getAbsolutePosition(Vector(0,0,0));
             Vector size = m_grid.getSize();
             std::cout << "CurScore " << m_score << " | Tick " << m_tick << " | State :" << m_state << " | Position " << shPos.x << "," << shPos.y<<","<<shPos.z<<std::endl; 
-            //for (size_t i = 0; i < size.x; i++) {
+            /*//for (size_t i = 0; i < size.x; i++) {
             for (size_t i = 0; i < 1; i++) {
                 std::cout << "----------------- P "<< i << "-----------------" << std::endl;
                 for (Vector::Coordinate_t k = size.z-1; k >= 0; k--) {
@@ -177,7 +168,7 @@ class GameCore {
                     std::cout << std::endl;
                 }
             }
-            std::cout << std::endl << std::endl<< std::endl;
+            std::cout << std::endl << std::endl<< std::endl;*/
         }
 
 };
