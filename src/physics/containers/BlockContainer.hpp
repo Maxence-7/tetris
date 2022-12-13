@@ -12,6 +12,8 @@ class BlockContainer {
     protected:
         Vector m_size;
         Container_t m_data;
+        using iterator  = Container_t::iterator;
+        using const_iterator = Container_t::const_iterator;
     public:
         // Constructors
         BlockContainer(Vector size) : m_size(size) {}
@@ -20,6 +22,24 @@ class BlockContainer {
         BlockContainer(const BlockContainer&) = default;
 
         ~BlockContainer() {}
+        // Iterators
+
+        iterator begin() {
+            return m_data.begin();
+        }
+
+        iterator end() {
+            return m_data.end();
+        }
+        
+        const_iterator begin() const { return m_data.begin(); }
+        
+        const_iterator end() const { return m_data.end(); }
+        
+        const_iterator cbegin() const { return m_data.cbegin(); }
+        
+        const_iterator cend() const { return m_data.cend(); }
+
 
         // Methods
         void append(const BlockContainer& cont) {

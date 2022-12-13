@@ -9,10 +9,14 @@
 #include <thread>
 #include <chrono>
 #include <random>
+#include <map>
+#include <memory>
 
 class GameCore {
     enum State {MOVING_BLOCK,PAUSE,COLLISION,GENERATING_NEW_BLOCK,CHECKING_COMPLETE_LINES,LOSE_CHECK};
     public:
+        friend class BlockContainer;
+        friend class Shape;
         using Score_t = unsigned;
         using Tick_t = long long;
 
@@ -36,13 +40,47 @@ class GameCore {
 
         }
         ~GameCore() {}
+        
+
+
+        /*
+                        for (auto const& [vec,col] : core.) {
+                    glPushMatrix();
+                    glTranslatef(vec.x,vec.y,vec.z);
+                    glBegin(GL_QUADS);
+                    absoluteDrawRect3D(v1,v2);
+                    glEnd();
+                    glPopMatrix();
+                }*/
+        std::map<Vector,BlockContainer::Value_t> render(double offset) const {
+            std::map<Vector,BlockContainer::Value_t> out;
+            Vector size = m_grid.getSize();
+            for (auto const& [vec, col] : m_grid) {
+                out.insert(std::make_pair(Vector((vec.x-std::floor(size.x/2))*offset,(vec.y-std::floor(size.y/2))*offset,(vec.z)*offset),col));
+            }
+
+            for (auto const& [vec, col] : m_curShape.toBlockContainer()) {
+                out.insert(std::make_pair(Vector((vec.x-std::floor(size.x/2))*offset,(vec.y-std::floor(size.y/2))*offset,(vec.z)*offset),col));
+            }
+            return out;
+        }
 
         void start() {
             m_state = State::GENERATING_NEW_BLOCK;
             turn();
         }
 
+    // Getters
+        State getState() const {
+            return m_state;
+        }
+
+    static void startThread(std::shared_ptr<GameCore> corePtr) {
+        return corePtr->start();
+    }
         
+
+
     private:
         void turn() {
             switch (m_state) {
@@ -88,6 +126,22 @@ class GameCore {
         }
         
     public:
+        void translate(const Vector& v) {
+            if(m_state == State::MOVING_BLOCK) m_curShape.translate(v);
+        }
+
+        void rotate(Shape::ROTATION_AXIS ax, Shape::ROTATION_DIRECTION dir) {
+            if(m_state == State::MOVING_BLOCK) m_curShape.rotate(ax,dir);
+        }
+
+        void dropUntilHit() {
+            if(m_state == State::MOVING_BLOCK) {
+                // TODO DROP UNTIL HIT;
+                m_state = State::COLLISION;  
+            }
+        }
+
+
         void disp() {
             std::cout << "TEST" << std::endl;
             Vector shPos = m_curShape.getAbsolutePosition(Vector(0,0,0));

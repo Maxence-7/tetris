@@ -52,7 +52,7 @@ class Vector {
         
         template<typename T>
         Vector operator *(const T& v) {
-            Vector(x*v,y*v,z*v);
+            return Vector(x*v,y*v,z*v);
         }   
 
         /**
