@@ -6,7 +6,7 @@
  
 Renderer rd;
 std::shared_ptr<GameCore> corePtr = std::make_shared<GameCore>(Vector(5,5,24));
-
+//GameCore core(Vector(5,5,24));
 
 
 void renderLoopGrid() {
@@ -91,6 +91,7 @@ int main(int argc, char** argv) {
     glutSetWindow(rd.parentWin);
 
     glutKeyboardFunc(processNormalKeys);
+    glutSpecialFunc(proccessSpecialKeys);
     glutMainLoop();
     return 0;
 }

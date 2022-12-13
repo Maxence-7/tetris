@@ -30,13 +30,18 @@ class GameCore {
         std::mt19937 m_gen;
         
     public:
-        GameCore(Vector size) : m_score(0), m_tick(0), m_grid(BlockContainer(size)) {
+
+        GameCore() {}
+        GameCore(Vector size) {
             /*std::random_device rd();
             std::mt19937 gen(19);*/
             
             //m_gen = gen;
-            m_curShape = Shape::getRandomShape(m_gen,m_grid.getSize());
-            m_nextShape = Shape::getRandomShape(m_gen,m_grid.getSize());
+            m_curShape = Shape::getRandomShape(m_gen,size);
+            m_nextShape = Shape::getRandomShape(m_gen,size);
+            m_grid = BlockContainer(size);
+            m_tick = 0;
+            m_score = 0;
 
         }
         ~GameCore() {}
@@ -52,6 +57,9 @@ class GameCore {
                     glEnd();
                     glPopMatrix();
                 }*/
+        Score_t getScore() const {
+            return m_score;
+        }
         std::map<Vector,BlockContainer::Value_t> render(double offset) const {
             std::map<Vector,BlockContainer::Value_t> out;
             Vector size = m_grid.getSize();
@@ -78,7 +86,11 @@ class GameCore {
     static void startThread(std::shared_ptr<GameCore> corePtr) {
         return corePtr->start();
     }
-        
+
+/*    static void startThread(GameCore& core) {
+        return core.start();
+    }
+  */      
 
 
     private:

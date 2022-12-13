@@ -16,6 +16,7 @@ class BlockContainer {
         using const_iterator = Container_t::const_iterator;
     public:
         // Constructors
+        BlockContainer() : m_size(Vector(0,0,0)) {}
         BlockContainer(Vector size) : m_size(size) {}
         explicit BlockContainer(Container_t data) : m_data(data) {};
         
