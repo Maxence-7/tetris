@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../physics/utils/Vector.hpp"
 #include "texture.hpp"
+#include "../physics/utils/Color.hpp"
 
 GLfloat gfPosX = 0.0;
 GLfloat gfDeltaX = .0001;
@@ -58,48 +59,49 @@ void drawGrid(void) {
     glFlush();
 }
 
-void glRect3D(Vector vect1, Vector vect2) {
-    double X1 = vect1.x;
-    double Y1 = vect1.y;
-    double Z1 = vect1.z;
-    double X2 = vect2.x;
-    double Y2 = vect2.y;
-    double Z2 = vect2.z;
+void glRect3D(Vector& vect1, Vector& vect2, Color col) {
+    double X1 = vect1.x/2;
+    double Y1 = vect1.y/2;
+    double Z1 = vect1.z/2;
+    double X2 = vect2.x/2;
+    double Y2 = vect2.y/2;
+    double Z2 = vect2.z/2;
+    glColor3f(col.r,col.g,col.b);
 
     //glBegin(GL_QUADS);
 
     //front
-    glColor3f(1.0,0.0,0.0); //red
+    //glColor3f(1.0,0.0,0.0); //red
     glTexCoord2i(0,0);glVertex3f(Y1,Y2,X2);
     glTexCoord2i(1,0);glVertex3f(Y1,Z2,X2);
     glTexCoord2i(1,1);glVertex3f(Z1,Z2,X2);
     glTexCoord2i(0,1);glVertex3f(Z1,Y2,X2);
     //back
-    glColor3f(0.0,1.0,0.0); //green
+    //glColor3f(0.0,1.0,0.0); //green
     glTexCoord2i(0,0);glVertex3f(Z1,Y2,X1);
     glTexCoord2i(1,0);glVertex3f(Z1,Z2,X1);
     glTexCoord2i(1,1);glVertex3f(Y1,Z2,X1);
     glTexCoord2i(0,1);glVertex3f(Y1,Y2,X1);
     //right
-    glColor3f(0.0,0.0,1.0); //blue
+    //glColor3f(0.0,0.0,1.0); //blue
     glTexCoord2i(0,0);glVertex3f(Z1,Y2,X2);
     glTexCoord2i(1,0);glVertex3f(Z1,Z2,X2);
     glTexCoord2i(1,1);glVertex3f(Z1,Z2,X1);
     glTexCoord2i(0,1);glVertex3f(Z1,Y2,X1);
     //left
-    glColor3f(1.0,1.0,0.0);
+    //glColor3f(1.0,1.0,0.0);
     glTexCoord2i(0,0);glVertex3f(Y1,Y2,X1);
     glTexCoord2i(1,0);glVertex3f(Y1,Z2,X1);
     glTexCoord2i(1,1);glVertex3f(Y1,Z2,X2);
     glTexCoord2i(0,1);glVertex3f(Y1,Y2,X2);
     //top
-    glColor3f(0.0,1.0,0.0);
+    //glColor3f(0.0,1.0,0.0);
     glTexCoord2i(0,0);glVertex3f(Y1,Y2,X1);
     glTexCoord2i(1,0);glVertex3f(Y1,Y2,X2);
     glTexCoord2i(1,1);glVertex3f(Z1,Y2,X2);
     glTexCoord2i(0,1);glVertex3f(Z1,Y2,X1);
     //bottom
-    glColor3f(1.0,0.0,1.0);
+    //glColor3f(1.0,0.0,1.0);
     glTexCoord2i(0,0);glVertex3f(Y1,Z2,X1);
     glTexCoord2i(1,0);glVertex3f(Y1,Z2,X2);
     glTexCoord2i(1,1);glVertex3f(Z1,Z2,X2);
