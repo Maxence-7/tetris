@@ -1,6 +1,5 @@
 #pragma once
 #include<array>
-/* template<typename T> requires std::integral<T> */
 
 class Vector {
     public:
@@ -13,8 +12,8 @@ class Vector {
 
 
         // Constructors
-        Vector() {}
-        Vector(Coordinate_t x, Coordinate_t y, Coordinate_t z) : x(x), y(y), z(z) {};
+        Vector();
+        Vector(Coordinate_t, Coordinate_t, Coordinate_t);
 
         template<typename T> requires std::integral<T>
         explicit Vector(std::array<T,3> arr) {Vector(arr[0],arr[1],arr[2]);}
@@ -25,21 +24,10 @@ class Vector {
         ~Vector() {} 
 
         // Operator Overload
-        Vector operator+ (const Vector& pos) const {
-            return Vector(x+pos.x,y+pos.y,z+pos.z);
-        }
-
-        Vector operator- (const Vector& pos) const {
-            return Vector(x-pos.x,y-pos.y,z-pos.z);
-        }
-
-        Vector operator- () const {
-            return Vector(-x,-y,-z);
-        }
-
-        Coordinate_t operator * (const Vector& pos) const {
-            return x*pos.x + y*pos.y + z*pos.z;
-        }
+        Vector operator + (const Vector& pos) const;
+        Vector operator - (const Vector& pos) const;
+        Vector operator - () const;
+        Coordinate_t operator * (const Vector& pos) const;
 
         /**
          * @brief Comparaison overload. Since using c++20, we don't have to define operator != 

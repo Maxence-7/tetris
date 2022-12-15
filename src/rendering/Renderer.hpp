@@ -8,7 +8,7 @@
 #include "./texture.hpp"
 #include "../physics/utils/Color.hpp"
 #include <memory>
-#include "../physics/GameCore.hpp"
+#include "../physics/core/game/GameCore.hpp"
 
 #define _2D 1000
 #define _3D 1001
@@ -76,7 +76,7 @@ class Renderer {
                     glPopMatrix();
                 }
                 
-                /*glTranslatef(-2*offset-0.5,-2*offset-0.5,0);
+                /*glTranslatef(-2*offset-0.5,-2*offset-0.5,0); // gc->getSize() 
                 for (int z = 0; z < 24; z++) {
                     for (int y = 0; y < 5; y++) {
                         for (int x = 0; x < 5; x++) {

@@ -8,31 +8,46 @@
 #include <map>
 //#template<unsigned n>
 class Shape {
-    private:
-        using Value_t = BlockContainer::Value_t;
-        using Container_t = BlockContainer::Container_t;
+    using Value_t = BlockContainer::Value_t;
+    using Container_t = BlockContainer::Container_t;
+    
+    private:   
         Container_t m_data;
         Vector m_pos;
         
     public:
+        // Enums
         enum ROTATION_DIRECTION {L=1,R=-1};
         enum ROTATION_AXIS {X,Y,Z};
 
         // Constructors
-        Shape() : m_pos(Vector(0,0,0)) {}
-        Shape(Vector pos) : m_pos(pos) {}
-        Shape (Vector pos, Container_t data) : m_pos(pos), m_data(data) {};
-        ~Shape() {}
-        
+        Shape();
+        Shape(Vector); 
+        Shape (Vector, Container_t);
+        Shape(const Shape&) = default;
+        ~Shape();
 
+        //Shape operator =(const Shape&);
+        operator BlockContainer() const;
+
+
+        //Methods
         /**
          * @brief Convert a Shape Object to BlockContainer
          * @return The BlockContainer object
          */
         BlockContainer toBlockContainer() const {
+            return (BlockContainer) *this;
+        }
+
+        /**
+         * @brief Convert a Shape Object to BlockContainer
+         * @return The BlockContainer object
+         */
+        BlockContainer toBlockContainer(const Vector& translation) const {
             Container_t map;
             for (auto const& [key,value] : m_data) {
-                map.insert(std::make_pair(getAbsolutePosition(key),value));
+                map.insert(std::make_pair(getAbsolutePosition(key+translation),value));
             }
             return BlockContainer(map);
         }
@@ -47,125 +62,115 @@ class Shape {
             return relPos + m_pos;
         }
 
-        bool canTranslate(const Vector& translation, BlockContainer blocks) {
-            for (auto const& [key,value] : m_data) {
-                const Vector translated = getAbsolutePosition(key)+translation;
-                if (blocks.isOccupied(translated) || !blocks.isValidPosition(translated)) return false;
-            }
-            return true;
-        }
+        void translate(const Vector&);
 
-        void translate(const Vector& translation) {
-            m_pos = m_pos + translation;
-        }
-
-        bool isInContainer(const BlockContainer& cont) {
-            for (auto const& [key,value] : m_data) {
-                if(!cont.isInContainer(getAbsolutePosition(key))) return false;
-            }
-            return true;
-        }
-
-        
-
-        void rotate(ROTATION_AXIS ax, ROTATION_DIRECTION r,bool (*func) (const Vector&)) {
-            BlockContainer::Container_t copy;
-            for (const auto& [key, value] : m_data) {
-                Vector newKey;
-                switch (ax) {
-                    case ROTATION_AXIS::X:
-                        newKey.x = key.x;
-                        newKey.y = -((Vector::Coordinate_t) r)*key.z;
-                        newKey.z = ((Vector::Coordinate_t) r)*key.y;
-                        break;
-                    case ROTATION_AXIS::Y:
-                        newKey.x = ((Vector::Coordinate_t) r)*key.z;
-                        newKey.y = key.y;
-                        newKey.z = -((Vector::Coordinate_t) r)*key.x;
-                        break;
-                    case ROTATION_AXIS::Z:
-                        newKey.x = -((Vector::Coordinate_t) r)*key.y;
-                        newKey.y = ((Vector::Coordinate_t) r)*key.x;
-                        newKey.z = key.z;
-                        break;
+        bool canTranslate(const Vector& translation,const BlockContainer& blocks, const Vector& gridSize) {
+            //bool b = true;
+            for (auto const& [key, value] : (BlockContainer) *this) {
+                Vector translated = key + translation;
+                if (!((translated.x >= 0 && translated.x < gridSize.x) && (translated.y >= 0 && translated.y < gridSize.y) && (translated.z >= 0))) {
+                    return false;
                 }
-                if(!func(getAbsolutePosition(newKey))) return;
-                copy.insert(std::make_pair(newKey,value));
             }
-
-            m_data = copy;
+            return ! (this->toBlockContainer(translation).isCollidingWith(blocks));
         }
 
-        void rotate(ROTATION_AXIS ax, ROTATION_DIRECTION r) {
-            rotate(ax,r,[](const Vector&) {return true;});
-        }
+        void rotate(ROTATION_AXIS,ROTATION_DIRECTION);
 
-        void dropUntilHit(const BlockContainer& container) {
-            //Vector t (0,0,-1);
-            while (!container.isCollidingWith(this->toBlockContainer())) {
-                translate(Vector(0,0,-1));
+        bool canRotate(ROTATION_AXIS& ax, ROTATION_DIRECTION& dir, const BlockContainer& blocks, const Vector& gridSize) {
+            Shape cpy = *this;
+            cpy.rotate(ax,dir);
+            BlockContainer cont = (BlockContainer) cpy;
+            for (auto const& [key, value] : cont) {
+                //Vector translated = key + translation;
+                if (!((key.x >= 0 && key.x < gridSize.x) && (key.y >= 0 && key.y < gridSize.y) && (key.z >= 0))) {
+                    return false;
+                }
             }
-
+            return !blocks.isCollidingWith(cont);
         }
 
         bool isOccupied(const Vector& pos) const {
-            Vector relative = pos-m_pos;
-            return m_data.contains(relative);   
+            return ((BlockContainer) *this).isOccupied(pos);   
         }
 
-        static Shape getRandomShape(std::mt19937 gen, Vector gridSize) {
+        static Shape getRandomShape(std::mt19937 yo, Vector gridSize) {
+
+            std::random_device rd;
+            std::mt19937 gen(rd());
             Container_t map;
-            map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-            return Shape(Vector(0,2,10),map); 
+            /*map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
+            return Shape(Vector(0,2,10),map);*/ 
+            
             std::uniform_int_distribution<char> typeDistrib(0,6);
+            std::uniform_int_distribution<char> nbRotDistrib(0,3);
+
+            Color c;
             switch (typeDistrib(gen)) {
                 case 0: // Bar
-                    map.insert(std::make_pair(Vector(2,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(1,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(-1,0,0),Color(1,0,0)));
+                    c = Color(0.1,0.91,0.95);
+                    map.insert(std::make_pair(Vector(2,0,0),c));
+                    map.insert(std::make_pair(Vector(1,0,0),c));
+                    map.insert(std::make_pair(Vector(0,0,0),c));
+                    map.insert(std::make_pair(Vector(-1,0,0),c));
                     break;
                 case 1: // T
-                    map.insert(std::make_pair(Vector(0,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(1,0,0),Color(1,0,0)));             
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(-1,0,0),Color(1,0,0)));
+                    c = Color(0.66,0.1,0.95);
+                    map.insert(std::make_pair(Vector(0,0,1),c));
+                    map.insert(std::make_pair(Vector(1,0,0),c));             
+                    map.insert(std::make_pair(Vector(0,0,0),c));
+                    map.insert(std::make_pair(Vector(-1,0,0),c));
                     break;
                 case 2: // -_
-                    map.insert(std::make_pair(Vector(1,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(-1,0,0),Color(1,0,0)));
+                    map.insert(std::make_pair(Vector(1,0,1),Color(0,0,1)));
+                    map.insert(std::make_pair(Vector(0,0,1),Color(0,0,1)));
+                    map.insert(std::make_pair(Vector(0,0,0),Color(0,0,1)));
+                    map.insert(std::make_pair(Vector(-1,0,0),Color(0,0,1)));
                     break;
                 case 3: // TODO -_
-                    map.insert(std::make_pair(Vector(1,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(1,0,0),Color(1,0,0)));
+                    map.insert(std::make_pair(Vector(1,0,1),Color(0,0,1)));
+                    map.insert(std::make_pair(Vector(0,0,1),Color(0,0,1)));
+                    map.insert(std::make_pair(Vector(0,0,0),Color(0,0,1)));
+                    map.insert(std::make_pair(Vector(1,0,0),Color(0,0,1)));
                     break;
                 case 4: // L
-                    map.insert(std::make_pair(Vector(2,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(1,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,1),Color(1,0,0)));
+                    c = Color(0.95,0.55,0.10);
+                    map.insert(std::make_pair(Vector(2,0,0),c));
+                    map.insert(std::make_pair(Vector(1,0,0),c));
+                    map.insert(std::make_pair(Vector(0,0,0),c));
+                    map.insert(std::make_pair(Vector(0,0,1),c));
                     break;
                 case 5: // L inv 
-                    map.insert(std::make_pair(Vector(2,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(1,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,-1),Color(1,0,0)));
+                    c = Color(1,0,0);
+                    map.insert(std::make_pair(Vector(2,0,0),c));
+                    map.insert(std::make_pair(Vector(1,0,0),c));
+                    map.insert(std::make_pair(Vector(0,0,0),c));
+                    map.insert(std::make_pair(Vector(0,0,-1),c));
                     break;
                 case 6: // Cube
-                    map.insert(std::make_pair(Vector(1,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(1,0,0),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,1),Color(1,0,0)));
-                    map.insert(std::make_pair(Vector(0,0,0),Color(1,0,0)));
+                    c = Color(0.95,0.83,0.1);
+                    map.insert(std::make_pair(Vector(1,0,1),c));
+                    map.insert(std::make_pair(Vector(1,0,0),c));
+                    map.insert(std::make_pair(Vector(0,0,1),c));
+                    map.insert(std::make_pair(Vector(0,0,0),c));
                     break;
 
     
                 default:
                     break;
             }
+            
+            Shape s(Vector(floor(gridSize.x/2),floor(gridSize.y/2),gridSize.z+4), map);
+            
+            for (ROTATION_AXIS ax :  {ROTATION_AXIS::X,ROTATION_AXIS::Y,ROTATION_AXIS::Z}) {
+                char nbRot = nbRotDistrib(gen);
+                for (char i = 0; i < nbRot; i++) {
+                    s.rotate(ax,ROTATION_DIRECTION::L);
+                }
+                
+            }
+
+            return s;
         }
 
         
