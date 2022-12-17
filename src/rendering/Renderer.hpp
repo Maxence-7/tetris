@@ -19,7 +19,7 @@ class Renderer {
     private:
         std::shared_ptr<GameCore> m_gc;
         void (*displayFunction)();
-        double offset = 2.3/2;
+        double offset = 1.0;
         unsigned int MODE = _3D;
 
         Vector v1 = Vector(0,0,0);
