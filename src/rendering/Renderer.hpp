@@ -1,25 +1,23 @@
 #pragma once
 
-#include "./renderingFunctions.hpp"
 #include <GL/glut.h>
 #include <GL/gl.h>
-#include <vector>
+#include "./renderingFunctions.hpp"
 #include "../physics/utils/Vector.hpp"
 #include "./texture.hpp"
-#include "../physics/utils/Color.hpp"
-#include <memory>
 #include "../physics/core/game/GameCore.hpp"
+#include "../physics/utils/Color.hpp"
+#include <vector>
+#include <memory>
 
 #define _2D 1000
 #define _3D 1001
 
 #define FPS 60
 
-double angle = 60.0;
-
 class Renderer {
     private:
-        std::shared_ptr<GameCore> gc;
+        std::shared_ptr<GameCore> m_gc;
         void (*displayFunction)();
         double offset = 2.3/2;
         unsigned int MODE = _3D;
@@ -27,181 +25,33 @@ class Renderer {
         Vector v1 = Vector(0,0,0);
         Vector v2 = Vector(2,2,-2);
 
-        void absoluteDrawRect2D(int x1, int y1, int x2, int y2, Color col) {
-            double width = glutGet(GLUT_WINDOW_WIDTH);
-            double height = glutGet(GLUT_WINDOW_HEIGHT);
-            glColor3f(col.r,col.g,col.b);
-            glRectf(2*x1/width-1,2*y1/height-1,2*x2/width-1,2*y2/height-1);
-        }
-
-        void absoluteDrawRect3D(Vector& vect1, Vector& vect2, Color col) {
-            const Vector v = Vector(-1,-1,1);
-            Vector v1 = vect1+v;
-            Vector v2 = vect2+v;
-            glRect3D(v1, v2, col);
-        }
-
     public:
-        int parentWin;
-        int scoreWin;
         Renderer();
         Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc);
         ~Renderer();
 
-        void setDisplayFunc(void (*f)()) {
-            displayFunction = f;
-            glutDisplayFunc(displayFunction);
-        }
+        void absoluteDrawRect2D(int x1, int y1, int x2, int y2, Color col);
+        void absoluteDrawRect3D(Vector& vect1, Vector& vect2, Color col);
 
-        void renderRoutineGrid() {
-            glutSetWindow(parentWin);
-            std::map<Vector, Color> map = gc->render(offset);
-            Color col = Color(1,0,0);
-            if (MODE == _3D) {
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                glLoadIdentity();
-                // Camera positionning
-                glTranslatef(-10,-15,-35);
-                glRotatef(-70,1,0,0);
-                glRotatef(2.5,0,1,0);
-                // Animation (rotation)
-                glRotatef(angle,0,0,1);
+        void setDisplayFunc(void (*f)());
 
-                for (auto const& [vec,col] : map) {
-                    glPushMatrix();
-                    glTranslatef(vec.x,vec.y,vec.z);
-                    glBegin(GL_QUADS);
-                    absoluteDrawRect3D(v1,v2,col);
-                    glEnd();
-                    glPopMatrix();
-                }
-                
-                /*glTranslatef(-2*offset-0.5,-2*offset-0.5,0); // gc->getSize() 
-                for (int z = 0; z < 24; z++) {
-                    for (int y = 0; y < 5; y++) {
-                        for (int x = 0; x < 5; x++) {
-                            glBegin(GL_QUADS);
-                            //col = Color(x/5.0,y/5.0,z/24.0);
-                            absoluteDrawRect3D(v1,v2,col);
-                            glEnd();
-                            glTranslatef(offset,0,0);
-                        }
-                        glTranslatef(-5*offset,0,0);
-                        glTranslatef(0,offset,0);
-                    }
-                    glTranslatef(0,-5*offset,0);
-                    glTranslatef(0,0,offset);
-                }
-                glTranslatef(0,0,-5*offset);*/
+        void renderRoutineGrid();
+        void renderRoutineScore();
+        void renderRoutinePreview();
 
-            }
-            if (MODE == _2D) {
-                glClear(GL_COLOR_BUFFER_BIT);
-                for (int x = 50; x<550 ; x+=50) {
-                    for (int y = 50; y<850 ; y+=50) {
-                        absoluteDrawRect2D(x,y,x+45,y+45,col);
-                    }
-                }
-            }
-            glFlush();
-        }
-        void renderRoutineScore() {
-            glutSetWindow(scoreWin);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glLoadIdentity();
-
-            glClearColor(0,0,0,0);
-	        glClear(GL_COLOR_BUFFER_BIT);
-        
-            Color col = Color(0.7,0.7,0.7);
-            glColor3f(col.r,col.g,col.b);
-            vBitmapOutput(0,0.9,"Tetris",GLUT_BITMAP_HELVETICA_18);
-            vBitmapOutput(0,0.8,"Score :",GLUT_BITMAP_HELVETICA_18);
-            std::string score = std::to_string(gc->getScore());
-            vBitmapOutput(0.5,0.8,score.data(),GLUT_BITMAP_HELVETICA_18);
-
-            vBitmapOutput(0,0.7,"Debug state :",GLUT_BITMAP_HELVETICA_18);
-            std::string state = std::to_string((int)gc->getState());
-            vBitmapOutput(0.75,0.7,state.data(),GLUT_BITMAP_HELVETICA_18);
-
-
-            glFlush();
-        }
+        int getParentWin();
+        int getScoreWin();
+        int getPreviewWin();
 };
 
-void reshape(int w, int h) {
-    glViewport(0,0,(GLsizei)w,(GLsizei)h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(60,1,2.0,50.0);
-    glMatrixMode(GL_MODELVIEW);
-}
+void reshape(int w, int h);
 
-void reshape2(int w, int h) {
-	float L; 
-	float H; 
+void reshape2(int w, int h);
 
-	glViewport(0,0,w,h); 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity(); 
-	if (w<=h) 
-	{ 
-	  if (w==0) H=900; 
-	  else H=(GLfloat) (300*h/w); 
-	  L=300; 
-	} 
-	else 
-	{ 
-	  H=900; 
-	  if (h==0) L=300; 
-	  else L=(GLfloat) (900*w/h); 
-	} 
-	gluOrtho2D(-L/2,L/2,-H/2,H/2); 
-}
+void reshape3(int w, int h);
 
-void timer(int) {
-    glutPostRedisplay();
-    glutTimerFunc(1000/FPS,timer,0);
-    angle+=0.5;
-    if (angle>360.0)
-        angle-=360.0;
-}
+void timer(int);
 
-Renderer::Renderer() {
+void timer2(int);
 
-}
-
-Renderer::Renderer(int argc, char** argv, std::shared_ptr<GameCore> gc) : gc(gc) {
-    glutInit(&argc, argv);
-    glutInitWindowSize(600, 900);
-    glutInitWindowPosition(100, 100);
-    parentWin = glutCreateWindow("Tetris");
-    scoreWin = glutCreateSubWindow(parentWin,300, 0, 300, 900);
-
-    glutSetWindow(parentWin);
-    if (MODE == _2D) {
-        glutInitDisplayMode(GLUT_NORMAL);
-    }
-    if (MODE == _3D) {
-        glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-        glutReshapeFunc(reshape);
-        glEnable(GL_DEPTH_TEST);
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-        initTexture();
-        glutTimerFunc(1000/FPS,timer,0);
-    }
-
-
-    glutSetWindow(scoreWin);
-    if (MODE == _3D) {
-        glutInitDisplayMode(GLUT_RGBA | GLUT_SINGLE);
-        glutReshapeFunc(reshape2);
-        //glEnable(GL_DEPTH_TEST);
-        //glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-        //initTexture();
-        glutTimerFunc(1000/FPS,timer,0);
-    } 
-}
-
-Renderer::~Renderer() {
-}
+void timer3(int);

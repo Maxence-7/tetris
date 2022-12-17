@@ -19,6 +19,11 @@ void renderLoopScore() {
     //glutPostRedisplay();
 }
 
+void renderLoopPreview() {
+    rd.renderRoutinePreview();
+    //glutPostRedisplay();
+}
+
 void processNormalKeys(unsigned char key, int, int) {
     switch (key) {
         case 27: // ESC
@@ -97,11 +102,13 @@ int main(int argc, char** argv) {
     
     // INIT RENDERER
     rd = Renderer(argc, argv, corePtr);
-    glutSetWindow(rd.parentWin);
+    glutSetWindow(rd.getParentWin());
     rd.setDisplayFunc(renderLoopGrid);
-    glutSetWindow(rd.scoreWin);
+    glutSetWindow(rd.getScoreWin());
     rd.setDisplayFunc(renderLoopScore);
-    glutSetWindow(rd.parentWin);
+    glutSetWindow(rd.getPreviewWin());
+    rd.setDisplayFunc(renderLoopPreview);
+    glutSetWindow(rd.getParentWin());
 
     glutKeyboardFunc(processNormalKeys);
     glutSpecialFunc(proccessSpecialKeys);
