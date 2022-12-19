@@ -129,7 +129,7 @@ void Renderer::renderRoutineScore() {
 }
 void Renderer::renderRoutinePreview() {
     glutSetWindow(previewWin);
-    std::map<Vector, Color> map = gc->render(offset);
+    std::map<Vector, Color> map = gc->renderNextShape(offset);
     Color col = Color(1,0,0);
     if (MODE == _3D) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

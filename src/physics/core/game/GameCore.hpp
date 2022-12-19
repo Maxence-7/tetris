@@ -57,6 +57,16 @@ class GameCore {
             return out;
         }
 
+        BlockContainer::Container_t renderNextShape(double offset) const {
+            BlockContainer::Container_t out;
+            Vector shapePos = m_nextShape.getAbsolutePosition(Vector(0,0,0));
+            for (auto const& [vec, col] : (BlockContainer) m_nextShape) {
+                out.insert(std::make_pair(getDisplayVectorFromGridVector(vec-shapePos,offset),col));
+            }
+            
+            return out;
+        }
+
         void start() {
             m_state = State::GENERATING_NEW_BLOCK;
             turn();
