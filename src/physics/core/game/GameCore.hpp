@@ -12,7 +12,7 @@
 #include <cmath>
 
 class GameCore {
-    enum State {MOVING_BLOCK,COLLISION,GENERATING_NEW_BLOCK,CHECKING_COMPLETE_LINES,LOSE_CHECK};
+    enum State {MOVING_BLOCK,GENERATING_NEW_BLOCK,CHECKING_COMPLETE_LINES,LOSE_CHECK};
     public:
         friend class BlockContainer;
         friend class Shape;
@@ -90,7 +90,7 @@ class GameCore {
     protected:
         void switchShape() {
             m_curShape = m_nextShape;
-            m_curShape = Shape::getRandomShape(m_gen,m_size);
+            m_nextShape = Shape::getRandomShape(m_gen,m_size);
         }
 
     private:
@@ -101,18 +101,13 @@ class GameCore {
                     switchShape();
                     m_state = State::MOVING_BLOCK;
                     break;
-                case COLLISION:
-                    m_state = State::LOSE_CHECK;
-                    break;
                 case MOVING_BLOCK:
                     if (m_curShape.canTranslate(Vector(0,0,-1),m_grid,m_size)) {
                         m_curShape.translate(Vector(0,0,-1));    
                     } else {
-                        m_state = State::COLLISION;
+                        m_state = State::LOSE_CHECK;
                     }
                     break;
-                    
-                
                 case LOSE_CHECK:
                     if (isGameLose())
                     {
@@ -180,7 +175,7 @@ class GameCore {
                 while (m_curShape.canTranslate(down,m_grid,m_size)) {
                     m_curShape.translate(down);
                 }
-                m_state = State::COLLISION;  
+                m_state = State::LOSE_CHECK;  
             }
         }
 
