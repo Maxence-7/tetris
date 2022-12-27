@@ -88,14 +88,15 @@ void proccessSpecialKeys(int key, int, int) {
 
 int main(int argc, char** argv) {
     //std::thread T(&run);
-    /* // Music playing
+    // Music playing
     sf::Music music;
     if (!music.openFromFile("tetris.ogg")) {
+        std::cout << "Error while opening the music file" << std::endl;
         //return 0;
     }
-    music.setVolume(15);
+    music.setVolume(30);
     music.setLoop(true);
-    music.play(); */
+    music.play();
 
     // Start GameCore
     std::thread coreThread(&GameCore::startThread,corePtr);
