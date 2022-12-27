@@ -29,6 +29,13 @@ class Vector {
         Vector operator - () const;
         Coordinate_t operator * (const Vector& pos) const;
 
+        Vector& operator += (const double x);
+        Vector& operator += (const Vector& pos);
+        Vector& operator -= (const double x);
+        Vector& operator -= (const Vector& pos);
+        Vector& operator *= (const double x);
+        Vector& operator /= (const double x);
+
         /**
          * @brief Comparaison overload. Since using c++20, we don't have to define operator != 
          * @param pos (const Vector&) 

@@ -11,6 +11,17 @@ int parentWin;
 int scoreWin;
 int previewWin;
 
+Vector Renderer::getAvgPos(std::map<Vector, Color> map) {
+    Vector moy = Vector(0,0,0);
+    unsigned nb = 0;
+    for (auto const& [vec,col] : map) {
+        moy += vec;
+        nb++;
+    }
+    moy/=nb;
+    return moy;
+}
+
 Renderer::Renderer() {
 
 }
@@ -135,15 +146,16 @@ void Renderer::renderRoutinePreview() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
         // Camera positionning
-        glTranslatef(0,-1,-5);
+        glTranslatef(0,0,-5);
         glRotatef(-70,1,0,0);
         glRotatef(2.5,0,1,0);
         // Animation (rotation)
         glRotatef(angle,0,0,1);
 
+        Vector moy = getAvgPos(map);
         for (auto const& [vec,col] : map) {
             glPushMatrix();
-            glTranslatef(vec.x,vec.y,vec.z);
+            glTranslatef(vec.x-moy.x,vec.y-moy.y,vec.z-moy.z);
             glBegin(GL_QUADS);
             Renderer::absoluteDrawRect3D(v1,v2,col);
             glEnd();
@@ -203,6 +215,7 @@ void reshape3(int w, int h) {
 void timer(int) {
     glutSetWindow(parentWin);
     glutPostRedisplay();
+    glutReshapeWindow(600, 900);
     glutTimerFunc(1000/FPS,timer,0);
 
     angle+=0.5;
