@@ -8,6 +8,10 @@
 
 void glRect3D(Vector& vect1, Vector& vect2, Color col);
 
+void drawLine3D(const Vector& vect1, const Vector& vect2);
+
+void drawBorders();
+
 void vBitmapOutput(double x, double y, char *string, void *font);
 
 void vStrokeOutput(GLfloat x, GLfloat y, char *string, void *font);

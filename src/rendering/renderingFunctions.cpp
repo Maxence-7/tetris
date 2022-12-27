@@ -53,6 +53,31 @@ void glRect3D(Vector& vect1, Vector& vect2, Color col) {
     glutSwapBuffers();
 }
 
+void drawLine3D(const Vector& vect1, const Vector& vect2) {
+
+    glVertex3d(vect1.x, vect1.y, vect1.z);
+    glVertex3d(vect2.x, vect2.y, vect2.z);
+
+    glutSwapBuffers();
+}
+
+void drawBorders() {
+    drawLine3D(Vector(2.5,2.5,-0.5),Vector(2.5,-2.5,-0.5));
+    drawLine3D(Vector(2.5,-2.5,-0.5),Vector(-2.5,-2.5,-0.5));
+    drawLine3D(Vector(-2.5,-2.5,-0.5),Vector(-2.5,2.5,-0.5));
+    drawLine3D(Vector(-2.5,2.5,-0.5),Vector(2.5,2.5,-0.5));
+
+    drawLine3D(Vector(2.5,2.5,-0.5),Vector(2.5,2.5,24.5));
+    drawLine3D(Vector(2.5,-2.5,-0.5),Vector(2.5,-2.5,24.5));
+    drawLine3D(Vector(-2.5,-2.5,-0.5),Vector(-2.5,-2.5,24.5));
+    drawLine3D(Vector(-2.5,2.5,-0.5),Vector(-2.5,2.5,24.5));
+
+    drawLine3D(Vector(2.5,2.5,24.5),Vector(2.5,-2.5,24.5));
+    drawLine3D(Vector(2.5,-2.5,24.5),Vector(-2.5,-2.5,24.5));
+    drawLine3D(Vector(-2.5,-2.5,24.5),Vector(-2.5,2.5,24.5));
+    drawLine3D(Vector(-2.5,2.5,24.5),Vector(2.5,2.5,24.5));
+}
+
 void vBitmapOutput(double x, double y, char *string, void *font) {
 	int len,i; // len donne la longueur de la chaîne de caractères
 

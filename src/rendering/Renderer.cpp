@@ -98,12 +98,21 @@ void Renderer::renderRoutineGrid() {
     if (MODE == _3D) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
+        glClearColor(0.5,0.5,0.5,0);
         // Camera positionning
         glTranslatef(-10,-15,-35);
         glRotatef(-70,1,0,0);
         glRotatef(2.5,0,1,0);
         // Animation (rotation)
         glRotatef(angle,0,0,1);
+
+        glPointSize(3.0);  
+
+        glBegin(GL_LINES);
+        Color col = Color(0.1,0.1,0.1);
+        glColor3f(col.r,col.g,col.b);
+        drawBorders();
+        glEnd();
 
         for (auto const& [vec,col] : map) {
             glPushMatrix();
@@ -145,6 +154,7 @@ void Renderer::renderRoutinePreview() {
     if (MODE == _3D) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
+        glClearColor(0.1,0.1,0.1,0);
         // Camera positionning
         glTranslatef(0,0,-5);
         glRotatef(-70,1,0,0);
