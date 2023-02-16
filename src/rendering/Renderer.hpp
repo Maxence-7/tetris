@@ -24,6 +24,7 @@ class Renderer {
         std::shared_ptr<GameCore> m_gc;
         void (*displayFunction)();
         double offset = 1.0;
+        double angleCam = 0;
         /**
          * @brief To change the mode of the game 2D or 3D (3D is better so 2D is deprecated)
          * 
@@ -123,6 +124,8 @@ class Renderer {
          * @return ID 
          */
         int getPreviewWin();
+
+        void setAngleCam(double ang);
 };
 
 /**

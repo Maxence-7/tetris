@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+#include <omp.h>
 
 #define _2D 1000
 #define _3D 1001
@@ -104,7 +105,7 @@ void Renderer::renderRoutineGrid() {
         glRotatef(-70,1,0,0);
         glRotatef(2.5,0,1,0);
         // Animation (rotation)
-        glRotatef(angle,0,0,1);
+        glRotatef(angleCam,0,0,1);
 
         glPointSize(3.0);  
 
@@ -114,6 +115,7 @@ void Renderer::renderRoutineGrid() {
         drawBorders();
         glEnd();
 
+        //#pragma omp parallel for //GOTTA GO FAST
         for (auto const& [vec,col] : map) {
             glPushMatrix();
             glTranslatef(vec.x,vec.y,vec.z);
@@ -182,6 +184,10 @@ int Renderer::getScoreWin() {
 }
 int Renderer::getPreviewWin() {
     return previewWin;
+}
+
+void Renderer::setAngleCam(double ang) {
+    angleCam=ang;
 }
 
 void reshape(int w, int h) {

@@ -12,7 +12,7 @@ sudo apt-get install libsfml-dev
 
 ## Compilation
 
-Compilation 
+Compilation
 ```bash
 make
 ```
@@ -25,3 +25,4 @@ make run
 ## Utils
 
 * [OpenGL](https://programminggems.wordpress.com/2019/11/27/getting-started-with-opengl-from-c-c/)
+* [SFML](https://www.sfml-dev.org/index-fr.php)
