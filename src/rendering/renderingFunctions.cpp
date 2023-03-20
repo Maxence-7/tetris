@@ -1,6 +1,6 @@
 #include "renderingFunctions.hpp"
 
-void glRect3D(Vector& vect1, Vector& vect2, Color col) {
+void glRect3D(Vector3D<double>& vect1, Vector3D<double>& vect2, Color col) {
     double X1 = vect1.x/2;
     double Y1 = vect1.y/2;
     double Z1 = vect1.z/2;
@@ -53,7 +53,7 @@ void glRect3D(Vector& vect1, Vector& vect2, Color col) {
     glutSwapBuffers();
 }
 
-void drawLine3D(const Vector& vect1, const Vector& vect2) {
+void drawLine3D(const Vector3D<double>& vect1, const Vector3D<double>& vect2) {
 
     glVertex3d(vect1.x, vect1.y, vect1.z);
     glVertex3d(vect2.x, vect2.y, vect2.z);
@@ -62,20 +62,20 @@ void drawLine3D(const Vector& vect1, const Vector& vect2) {
 }
 
 void drawBorders() {
-    drawLine3D(Vector(2.5,2.5,-0.5),Vector(2.5,-2.5,-0.5));
-    drawLine3D(Vector(2.5,-2.5,-0.5),Vector(-2.5,-2.5,-0.5));
-    drawLine3D(Vector(-2.5,-2.5,-0.5),Vector(-2.5,2.5,-0.5));
-    drawLine3D(Vector(-2.5,2.5,-0.5),Vector(2.5,2.5,-0.5));
+    drawLine3D(Vector3D<double>(2.5,2.5,-0.5),Vector3D<double>(2.5,-2.5,-0.5));
+    drawLine3D(Vector3D<double>(2.5,-2.5,-0.5),Vector3D<double>(-2.5,-2.5,-0.5));
+    drawLine3D(Vector3D<double>(-2.5,-2.5,-0.5),Vector3D<double>(-2.5,2.5,-0.5));
+    drawLine3D(Vector3D<double>(-2.5,2.5,-0.5),Vector3D<double>(2.5,2.5,-0.5));
 
-    drawLine3D(Vector(2.5,2.5,-0.5),Vector(2.5,2.5,24.5));
-    drawLine3D(Vector(2.5,-2.5,-0.5),Vector(2.5,-2.5,24.5));
-    drawLine3D(Vector(-2.5,-2.5,-0.5),Vector(-2.5,-2.5,24.5));
-    drawLine3D(Vector(-2.5,2.5,-0.5),Vector(-2.5,2.5,24.5));
+    drawLine3D(Vector3D<double>(2.5,2.5,-0.5),Vector3D<double>(2.5,2.5,24.5));
+    drawLine3D(Vector3D<double>(2.5,-2.5,-0.5),Vector3D<double>(2.5,-2.5,24.5));
+    drawLine3D(Vector3D<double>(-2.5,-2.5,-0.5),Vector3D<double>(-2.5,-2.5,24.5));
+    drawLine3D(Vector3D<double>(-2.5,2.5,-0.5),Vector3D<double>(-2.5,2.5,24.5));
 
-    drawLine3D(Vector(2.5,2.5,24.5),Vector(2.5,-2.5,24.5));
-    drawLine3D(Vector(2.5,-2.5,24.5),Vector(-2.5,-2.5,24.5));
-    drawLine3D(Vector(-2.5,-2.5,24.5),Vector(-2.5,2.5,24.5));
-    drawLine3D(Vector(-2.5,2.5,24.5),Vector(2.5,2.5,24.5));
+    drawLine3D(Vector3D<double>(2.5,2.5,24.5),Vector3D<double>(2.5,-2.5,24.5));
+    drawLine3D(Vector3D<double>(2.5,-2.5,24.5),Vector3D<double>(-2.5,-2.5,24.5));
+    drawLine3D(Vector3D<double>(-2.5,-2.5,24.5),Vector3D<double>(-2.5,2.5,24.5));
+    drawLine3D(Vector3D<double>(-2.5,2.5,24.5),Vector3D<double>(2.5,2.5,24.5));
 }
 
 void vBitmapOutput(double x, double y, char *string, void *font) {
@@ -101,7 +101,4 @@ void writeText(std::string score,std::string state) {
 
     vBitmapOutput(-0.28,0.8,"Score :",GLUT_BITMAP_HELVETICA_18);
     vBitmapOutput(0.13,0.8,score.data(),GLUT_BITMAP_HELVETICA_18);
-
-    vBitmapOutput(-0.38,0.7,"Debug state :",GLUT_BITMAP_HELVETICA_18);
-    vBitmapOutput(0.39,0.7,state.data(),GLUT_BITMAP_HELVETICA_18);
 }

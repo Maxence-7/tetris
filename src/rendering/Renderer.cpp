@@ -12,17 +12,6 @@ int parentWin;
 int scoreWin;
 int previewWin;
 
-Vector Renderer::getAvgPos(std::map<Vector, Color> map) {
-    Vector moy = Vector(0,0,0);
-    unsigned nb = 0;
-    for (auto const& [vec,col] : map) {
-        moy += vec;
-        nb++;
-    }
-    moy/=nb;
-    return moy;
-}
-
 Renderer::Renderer() {
 
 }
@@ -80,10 +69,10 @@ void Renderer::absoluteDrawRect2D(int x1, int y1, int x2, int y2, Color col) {
     glRectf(2*x1/width-1,2*y1/height-1,2*x2/width-1,2*y2/height-1);
 }
 
-void Renderer::absoluteDrawRect3D(Vector& vect1, Vector& vect2, Color col) {
-    const Vector v = Vector(-1,-1,1);
-    Vector v1 = vect1+v;
-    Vector v2 = vect2+v;
+void Renderer::absoluteDrawRect3D(Vector3D<double>& vect1, Vector3D<double>& vect2, Color col) {
+    const Vector3D<double> v(-1,-1,1);
+    Vector3D<double> v1 = vect1+v;
+    Vector3D<double> v2 = vect2+v;
     glRect3D(v1, v2, col);
 }
 
@@ -94,7 +83,7 @@ void Renderer::setDisplayFunc(void (*f)()) {
 
 void Renderer::renderRoutineGrid() {
     glutSetWindow(parentWin);
-    std::map<Vector, Color> map = gc->render(offset);
+    GameCore::Container_t<double> map = gc->render(offset);
     Color col = Color(1,0,0);
     if (MODE == _3D) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -151,7 +140,7 @@ void Renderer::renderRoutineScore() {
 }
 void Renderer::renderRoutinePreview() {
     glutSetWindow(previewWin);
-    std::map<Vector, Color> map = gc->renderNextShape(offset);
+    GameCore::Container_t<double> map = gc->renderNextShape(offset);
     Color col = Color(1,0,0);
     if (MODE == _3D) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -164,7 +153,7 @@ void Renderer::renderRoutinePreview() {
         // Animation (rotation)
         glRotatef(angle,0,0,1);
 
-        Vector moy = getAvgPos(map);
+        Vector3D<double> moy = getAvgPos(map);
         for (auto const& [vec,col] : map) {
             glPushMatrix();
             glTranslatef(vec.x-moy.x,vec.y-moy.y,vec.z-moy.z);
@@ -188,6 +177,10 @@ int Renderer::getPreviewWin() {
 
 void Renderer::setAngleCam(double ang) {
     angleCam=ang;
+}
+
+double Renderer::getAngleCam() const {
+    return angleCam;
 }
 
 void reshape(int w, int h) {

@@ -38,7 +38,7 @@ void BlockContainer::append(const BlockContainer& cont) {
 }
 
 
-bool BlockContainer::isOccupied(const Vector& pos) const {
+bool BlockContainer::isOccupied(const Vector3D<Absolute_t>& pos) const {
     for (auto const& [vec,col] : *this) {
         if (pos == vec) {
             return true;

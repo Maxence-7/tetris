@@ -1,5 +1,5 @@
 #pragma once
-#include "../utils/Vector.hpp"
+#include "../utils/Vector3D.hpp"
 #include "../utils/Color.hpp"
 
 #include <map>
@@ -8,8 +8,11 @@
 class BlockContainer {
     
     public:
+        using Relative_t = int;
+        using Absolute_t = unsigned;
         using Value_t = Color;  
-        using Container_t = std::map<Vector,Value_t>;
+        using Container_t = std::map<Vector3D<Absolute_t>,Value_t>;
+        
 
         using iterator  = Container_t::iterator;
         using const_iterator = Container_t::const_iterator;
@@ -37,7 +40,7 @@ class BlockContainer {
         // Methods
         void append(const BlockContainer&);
         
-        bool isOccupied(const Vector&) const;
+        bool isOccupied(const Vector3D<Absolute_t>&) const;
         bool isCollidingWith(const BlockContainer& other) const;
 
         

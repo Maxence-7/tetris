@@ -3,7 +3,7 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include "./renderingFunctions.hpp"
-#include "../physics/utils/Vector.hpp"
+#include "../physics/utils/Vector3D.hpp"
 #include "./texture.hpp"
 #include "../physics/core/game/GameCore.hpp"
 #include "../physics/utils/Color.hpp"
@@ -35,7 +35,7 @@ class Renderer {
          * @brief Vector which work with absoluteDrawRect3D(...) so let's keep it :)
          * 
          */
-        Vector v1 = Vector(0,0,0); Vector v2 = Vector(2,2,-2);
+        Vector3D<double> v1 =  Vector3D<double>(); Vector3D<double> v2 = Vector3D<double>(2.,2.,-2.);
 
         /**
          * @brief Get the average position of the next piece in order the place it in the middle for a nicer rotation
@@ -43,7 +43,18 @@ class Renderer {
          * @param map 
          * @return Average Position (Vector object) 
          */
-        Vector getAvgPos(std::map<Vector, Color> map);
+        template<typename T>
+        Vector3D<T> getAvgPos(GameCore::Container_t<T> map) {
+            Vector3D<T> moy (0,0,0);
+            unsigned nb = 0;
+            for (auto const& [vec,col] : map) {
+                moy += vec;
+                nb++;
+            }
+            moy/=nb;
+            return moy;
+        }
+
 
     public:
         /**
@@ -81,7 +92,7 @@ class Renderer {
          * @param vect2 
          * @param col 
          */
-        void absoluteDrawRect3D(Vector& vect1, Vector& vect2, Color col);
+        void absoluteDrawRect3D(Vector3D<double>& vect1, Vector3D<double>& vect2, Color col);
 
         /**
          * @brief Set the Display Function used to render the window
@@ -126,6 +137,7 @@ class Renderer {
         int getPreviewWin();
 
         void setAngleCam(double ang);
+        double getAngleCam() const;
 };
 
 /**

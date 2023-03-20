@@ -1,8 +1,7 @@
 #pragma once
 #include "../../containers/Shape.hpp"
 #include "../../containers/BlockContainer.hpp"
-#include "../../utils/Vector.hpp"
-
+#include "../../utils/Vector3D.hpp"
 #include <iostream>
 #include <thread>
 #include <random>
@@ -17,35 +16,40 @@ class GameCore {
         friend class BlockContainer;
         friend class Shape;
         using Score_t = unsigned;
-        using Tick_t = long long;
+        using Size_t = Vector3D<unsigned>;
+
+        template<typename T>
+        using Container_t = std::map<Vector3D<T>,Color>;
 
     private:
         bool m_isPaused;
-        Vector m_size;
+        Size_t m_size;
         State m_state; 
         Score_t m_score;
-        Tick_t m_tick; 
 
         Shape m_curShape; 
         Shape m_nextShape;
         BlockContainer m_grid;
+        //SoundCore m_soundCore ;//= SoundCore(30);
 
 
         std::mt19937 m_gen;
         std::vector<unsigned> m_indexesComplete;
-        //std::thread coreThread;
     public:
-        //GameCore() : m_isPaused(false), m_tick(0), m_score(0)  {}
-        GameCore(const Vector&); 
+        GameCore(const Size_t&); 
         GameCore(const GameCore&);
         ~GameCore();
         
-        Vector getDisplayVectorFromGridVector(const Vector& vec, double offset) const {
-            return Vector((vec.x-std::floor(m_size.x/2))*offset,(vec.y-std::floor(m_size.y/2))*offset,(vec.z)*offset);
+        template<typename T,typename U>
+        Vector3D<T> getDisplayVectorFromGridVector(const Vector3D<U>& vec, T offset) const {
+            Vector3D<T> castVect(vec);
+            Vector3D<T> castSize(m_size);
+            return Vector3D<T>((castVect.x-std::floor(castSize.x/2))*offset,(castVect.y-std::floor(castSize.y/2))*offset,(castVect.z)*offset);
         }
 
-        BlockContainer::Container_t render(double offset) const {
-            BlockContainer::Container_t out;
+        template<typename T>
+        Container_t<T> render(T offset) const {
+            Container_t<T> out;
             for (auto const& [vec, col] : m_grid) {
                 out.insert(std::make_pair(getDisplayVectorFromGridVector(vec,offset),col));
             }
@@ -57,11 +61,12 @@ class GameCore {
             return out;
         }
 
-        BlockContainer::Container_t renderNextShape(double offset) const {
-            BlockContainer::Container_t out;
-            Vector shapePos = m_nextShape.getAbsolutePosition(Vector(0,0,0));
+        template<typename T>
+        Container_t<T> renderNextShape(T offset) const {
+            Container_t<T> out;
+            Vector3D<Shape::Absolute_t> shapePos = m_nextShape.getAbsolutePosition(Vector3D<Shape::Relative_t>(0,0,0));
             for (auto const& [vec, col] : (BlockContainer) m_nextShape) {
-                out.insert(std::make_pair(getDisplayVectorFromGridVector(vec-shapePos,offset),col));
+                out.insert(std::make_pair(getDisplayVectorFromGridVector(Vector3D<Shape::Relative_t>(vec)-Vector3D<Shape::Relative_t>(shapePos),offset),col));
             }
             
             return out;
@@ -80,7 +85,7 @@ class GameCore {
     // Getters
         State getState() const;        
         Score_t getScore() const;
-        Vector getSize() const;
+        Size_t getSize() const;
 
 
         static void startThread(std::shared_ptr<GameCore> corePtr) {
@@ -102,8 +107,8 @@ class GameCore {
                     m_state = State::MOVING_BLOCK;
                     break;
                 case MOVING_BLOCK:
-                    if (m_curShape.canTranslate(Vector(0,0,-1),m_grid,m_size)) {
-                        m_curShape.translate(Vector(0,0,-1));    
+                    if (m_curShape.canTranslate(Vector3D<Shape::Relative_t>(0,0,-1),m_grid,m_size)) {
+                        m_curShape.translate(Vector3D<Shape::Relative_t>(0,0,-1));    
                     } else {
                         m_state = State::LOSE_CHECK;
                     }
@@ -127,7 +132,7 @@ class GameCore {
                     for (size_t k = 0; k < m_size.z; k++) {
                         for (size_t i = 0; i < m_size.x; i++) {
                             for (size_t j = 0; j < m_size.y; j++) {
-                                if (!m_grid.isOccupied(Vector(i,j,k)) && k < m_size.z) {
+                                if (!m_grid.isOccupied(Vector3D<BlockContainer::Absolute_t>(i,j,k)) && k < m_size.z) {
                                     i = 0;
                                     j = 0;
                                     k++;
@@ -144,7 +149,7 @@ class GameCore {
                         for (auto const& [vec, col] : m_grid) {
                             if (std::find(m_indexesComplete.begin(),m_indexesComplete.end(),vec.z) == m_indexesComplete.end()) {
                                 size_t diff = count_if(m_indexesComplete.begin(),m_indexesComplete.end(),[vec](unsigned val) {return val < vec.z;});
-                                map.insert(std::make_pair(vec-Vector(0,0,diff),col));
+                                map.insert(std::make_pair(Vector3D<BlockContainer::Absolute_t>(Vector3D<BlockContainer::Relative_t>(vec)-Vector3D<BlockContainer::Relative_t>(0,0,diff)),col));
                             }   
                         }
 
@@ -154,14 +159,12 @@ class GameCore {
                     m_state = State::GENERATING_NEW_BLOCK;
                     break;
             }
-            disp();
-            m_tick++;
             std::this_thread::sleep_for(std::chrono::milliseconds(750));
             turn();
         }
         
     public:
-        void translate(const Vector& v) {
+        void translate(const Vector3D<Shape::Relative_t>& v) {
             if(m_state == State::MOVING_BLOCK && m_curShape.canTranslate(v,m_grid,m_size)) m_curShape.translate(v);
         }
 
@@ -171,7 +174,7 @@ class GameCore {
 
         void dropUntilHit() {
             if(m_state == State::MOVING_BLOCK) {
-                Vector down(0,0,-1);
+                Vector3D<Shape::Relative_t> down(0,0,-1);
                 while (m_curShape.canTranslate(down,m_grid,m_size)) {
                     m_curShape.translate(down);
                 }
@@ -179,14 +182,5 @@ class GameCore {
             }
         }
 
-        bool isValidPosition(const Vector& pos) const;
         bool isGameLose() const;
-
-        void disp() {
-            //std::cout << "TEST" << std::endl;
-            Vector shPos = m_curShape.getAbsolutePosition(Vector(0,0,0));
-            std::cout << "CurScore " << m_score << " | Tick " << m_tick << " | State :" << m_state << " | Position " << shPos.x << "," << shPos.y<<","<<shPos.z<<std::endl; 
-        }
-
-
 };
