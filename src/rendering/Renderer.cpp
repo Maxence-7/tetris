@@ -134,7 +134,7 @@ void Renderer::renderRoutineScore() {
 
     Color col = Color(0.7,0.7,0.7);
     glColor3f(col.r,col.g,col.b);
-    writeText(std::to_string(gc->getScore()),std::to_string((int)gc->getState()));
+    writeText(std::to_string(gc->getScore()));
 
     glFlush();
 }
@@ -237,7 +237,7 @@ void timer2(int) {
     glutPostRedisplay();
     glutTimerFunc(1000/1,timer2,0);
 
-    writeText(std::to_string(gc->getScore()),std::to_string((int)gc->getState()));
+    writeText(std::to_string(gc->getScore()));
 }
 
 void timer3(int) {

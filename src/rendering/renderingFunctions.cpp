@@ -96,9 +96,11 @@ void vStrokeOutput(GLfloat x, GLfloat y, char *string, void *font) {
 	glPopMatrix();
 }
 
-void writeText(std::string score,std::string state) {
-    vBitmapOutput(-0.2,0.9,"Tetris",GLUT_BITMAP_HELVETICA_18);
+void writeText(std::string score) {
+    char str1[] = "Tetris";
+    char str2[] = "Score :";
+    vBitmapOutput(-0.2,0.9,str1,GLUT_BITMAP_HELVETICA_18);
 
-    vBitmapOutput(-0.28,0.8,"Score :",GLUT_BITMAP_HELVETICA_18);
+    vBitmapOutput(-0.28,0.8,str2,GLUT_BITMAP_HELVETICA_18);
     vBitmapOutput(0.13,0.8,score.data(),GLUT_BITMAP_HELVETICA_18);
 }
