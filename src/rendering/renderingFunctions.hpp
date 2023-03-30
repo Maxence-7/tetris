@@ -11,6 +11,7 @@ void glRect3D(Vector3D<double>& vect1, Vector3D<double>& vect2, Color col);
 void drawLine3D(const Vector3D<double>& vect1, const Vector3D<double>& vect2);
 
 void drawBorders();
+void drawBorders(Vector3D<double>&);
 
 void vBitmapOutput(double x, double y, char *string, void *font);
 

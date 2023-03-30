@@ -8,6 +8,7 @@ OpenGL, SFML
 sudo apt install -y mesa-common-dev mesa-utils freeglut3-dev 
 
 sudo apt-get install libsfml-dev
+sudo apt-get install libboost-all-dev
 ```
 
 ## Compilation

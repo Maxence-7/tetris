@@ -101,7 +101,8 @@ void Renderer::renderRoutineGrid() {
         glBegin(GL_LINES);
         Color col = Color(0.1,0.1,0.1);
         glColor3f(col.r,col.g,col.b);
-        drawBorders();
+        Vector3D<double> size = Vector3D<double>(gc->getSize());
+        drawBorders(size);
         glEnd();
 
         //#pragma omp parallel for //GOTTA GO FAST

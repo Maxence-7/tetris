@@ -1,9 +1,6 @@
 #include "GameCore.hpp"
-
-GameCore::GameCore(const Size_t& size) : m_isPaused(false), m_score(0),m_size(size), m_curShape(Shape::getRandomShape(m_gen,size)), m_nextShape(Shape::getRandomShape(m_gen,size)) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    m_gen = gen;
+GameCore::GameCore() : GameCore(GameCore::DEFAULT_SIZE) {}
+GameCore::GameCore(const Size_t& size) : m_isPaused(false), m_score(0),m_size(size), m_curShape(Shape::getRandomShape(size)), m_nextShape(Shape::getRandomShape(size)) {
     m_grid = BlockContainer();
 
 };
@@ -34,3 +31,5 @@ GameCore::Score_t GameCore::getScore() const {
 GameCore::Size_t GameCore::getSize() const {
     return m_size;
 }
+
+const GameCore::Size_t GameCore::DEFAULT_SIZE(5,5,24);

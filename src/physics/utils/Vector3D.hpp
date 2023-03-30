@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <SFML/Network.hpp>     
 template<typename T>
 class Vector3D {
     public:
@@ -102,5 +103,19 @@ class Vector3D {
             }
             return true;
         }
+
+        
+
 };
 
+
+template<typename T>
+sf::Packet& operator <<(sf::Packet& packet, const Vector3D<T>& vec) {
+    return packet << vec.x << vec.y << vec.z;
+}
+
+template<typename T>
+sf::Packet& operator >>(sf::Packet& packet, Vector3D<T>& vec)
+{
+    return packet >> vec.x >> vec.y >> vec.z;
+}
