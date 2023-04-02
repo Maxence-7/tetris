@@ -22,7 +22,7 @@ public:
 
     private: 
         inline virtual void onAwait() {
-            this->switchShape();
+            this->onAwait();
             sf::Packet pack;
             pack << PacketHeader::SHAPES << m_curShape << m_nextShape;
             sendToAll(pack);

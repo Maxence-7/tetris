@@ -56,3 +56,31 @@ bool BlockContainer::isCollidingWith(const BlockContainer& cont) const {
     return false;
     
 }
+
+
+sf::Packet& operator << (sf::Packet& packet, const BlockContainer& blkContainer)
+{
+    packet << ((unsigned) blkContainer.size());
+    for (auto const &[key, value] : blkContainer) {
+        packet << key << value;
+    }
+    
+    return packet;
+}
+
+
+sf::Packet& operator >> (sf::Packet& packet, BlockContainer& blkContainer)
+{
+    unsigned tmp;
+    packet >> tmp;
+    size_t size = (size_t) tmp;
+    BlockContainer::Container_t container;
+    Vector3D<BlockContainer::Absolute_t> key;
+    Color value;
+    for (size_t i = 0; i < size; i++) {
+        packet >> key >> value;
+        container.insert(std::make_pair(key,value));
+    }
+    blkContainer = BlockContainer(container);
+    return packet;
+}

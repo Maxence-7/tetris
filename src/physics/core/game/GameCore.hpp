@@ -11,18 +11,20 @@
 #include <memory>
 #include <cmath>
 
+/**
+ * @brief GameCore compile Game Logic and Data.
+ */
 class GameCore {
     
     public:
-        friend class BlockContainer;
-        friend class Shape;
-        friend class sf::Packet;
-
         using Score_t = unsigned;
         using Size_t = Vector3D<unsigned>;
 
         enum State {MOVING_BLOCK,GENERATING_NEW_BLOCK,CHECKING_COMPLETE_LINES,LOSE_CHECK};
         
+        /**
+         * @brief Default Grid Size for a Game
+         */
         static const Size_t DEFAULT_SIZE;
 
 
@@ -34,22 +36,43 @@ class GameCore {
     private:
         bool m_isPaused;
         bool m_isLose = false;
-        
+        bool m_alreadyStarted = false;
         State m_state; 
         Score_t m_score;
+        BlockContainer m_grid;
+        std::vector<unsigned> m_indexesComplete;
     protected:
         Size_t m_size;
         Shape m_curShape; 
         Shape m_nextShape;
     private:
-        BlockContainer m_grid;
-        std::vector<unsigned> m_indexesComplete;
+
     public:
+        /**
+         * @brief Default constructor, using Default 3D size.
+         */
         GameCore();
+
+
+        /**
+         * @brief Constructor with a custom size
+         * @param  size : Size of the game
+         * @attention In case of a 2D game, a 3D vector must be specified and the y coordinate of size must be equal to one.
+         */
         GameCore(const Size_t&); 
+
         GameCore(const GameCore&);
         ~GameCore();
         
+        // OpenGL Interface
+        /**
+         * @brief Convert absolute coordinates to OpenGL ones, independantly of typing
+         * @tparam T : type for output vector
+         * @tparam U : Type of the input vector (that will be casted to T)
+         * @param vec : Input a vector
+         * @param offset : Offset between two blocks
+         * @return Vector of coordinates in OpenGL space.
+         */
         template<typename T,typename U>
         Vector3D<T> getDisplayVectorFromGridVector(const Vector3D<U>& vec, T offset) const {
             Vector3D<T> castVect(vec);
@@ -57,6 +80,12 @@ class GameCore {
             return Vector3D<T>((castVect.x-std::floor(castSize.x/2))*offset,(castVect.y-std::floor(castSize.y/2))*offset,(castVect.z)*offset);
         }
 
+        /**
+         * @brief Apply getDisplayVectorFromGridVector for each block in the grid
+         * @tparam T : Output type 
+         * @param offset : Offset between blocks
+         * @return Grid in OpenGL Space
+         */
         template<typename T>
         Container_t<T> render(T offset) const {
             Container_t<T> out;
@@ -71,6 +100,12 @@ class GameCore {
             return out;
         }
 
+        /**
+         * @brief Apply getDisplayVectorFromGridVector for each block in the m_shape
+         * @tparam T : Output type 
+         * @param offset : Offset between blocks
+         * @return Shape in OpenGL Space
+         */
         template<typename T>
         Container_t<T> renderNextShape(T offset) const {
             Container_t<T> out;
@@ -82,147 +117,76 @@ class GameCore {
             return out;
         }
 
-        void start() {
-            if (!m_isLose){
-                m_state = State::GENERATING_NEW_BLOCK;
-                run();
-            }
+
+        // Core
+    protected:
+        inline virtual void onAwait() {
+            m_curShape = m_nextShape;
+            m_nextShape = Shape::getRandomShape(m_size);
         }
 
+   
+    public:
+        /**
+         * @brief Accessible method to start a game.
+         * @attention A game can only be started once. 
+         */
+        void start();
 
-        void togglePause() {
-            m_isPaused = !m_isPaused;
-            if (!m_isPaused && !m_isLose) {
-                run();
-            }
-        }
 
-    // Getters
-        State getState() const;        
-        Score_t getScore() const;
-        Size_t getSize() const;
+        /**
+         * @brief Change the mode. If the game isn't paused, the game become paused .
+         */
+        void togglePause();
 
+        /**
+         * @brief Check if a game is losed
+         * @return boolean. True if the game is losed.
+         * @attention It's not a getter.
+         */
+        bool isGameLose() const;
 
         static void startThread(std::shared_ptr<GameCore> corePtr) {
             return corePtr->start();
         }
 
-    protected:
-        void switchShape() {
-            m_curShape = m_nextShape;
-            m_nextShape = Shape::getRandomShape(m_size);
-        }
+        // Movements 
+        /**
+         * @brief Translate the current shape by the specified vector.
+         * @param vec : Translation Vector
+         * @attention This time the method is verifing if the shape can translate before applying the translation.
+         */
+        void translate(const Vector3D<Shape::Relative_t>&);
 
-    private:
-
-        virtual inline void onAwait() {
-            switchShape();
-            return;
-        }
-
-        virtual inline void turn() {
-           
-        }
+        /**
+         * @brief Rotate the current shape by the specified axis and direction
+         * @param ax : Axis of rotation
+         * @param dir : Direction
+         * @attention This time the method is verifing if the shape can rotate before applying the rotation.
+         */
+        void rotate(Shape::ROTATION_AXIS, Shape::ROTATION_DIRECTION);
         
-        void run() {
-            while(!m_isPaused) {
-                switch (m_state) {
-                    case GENERATING_NEW_BLOCK:
-                        onAwait();
-                        m_state = State::MOVING_BLOCK;
-                        break;
-                    case MOVING_BLOCK:
-                        if (m_curShape.canTranslate(Vector3D<Shape::Relative_t>(0,0,-1),m_grid,m_size)) {
-                            m_curShape.translate(Vector3D<Shape::Relative_t>(0,0,-1));    
-                        } else {
-                            m_state = State::LOSE_CHECK;
-                        }
-                        break;
-                    case LOSE_CHECK:
-                        m_isLose = isGameLose();
-                        if (m_isLose)
-                        {
-                            std::cout << "LOSE" << std::endl;
-                            return;
-                        }
-                        m_grid.append((BlockContainer) m_curShape);
-                        m_state = State::CHECKING_COMPLETE_LINES;
-                        break;
+        /**
+         * @brief Drop the current shape until it hits the floor or an other block.
+         */
+        void dropUntilHit();
 
-                    case CHECKING_COMPLETE_LINES:                    
-                        m_indexesComplete.clear();
 
-                        
-                        for (size_t k = 0; k < m_size.z; k++) {
-                            for (size_t i = 0; i < m_size.x; i++) {
-                                for (size_t j = 0; j < m_size.y; j++) {
-                                    if (!m_grid.isOccupied(Vector3D<BlockContainer::Absolute_t>(i,j,k)) && k < m_size.z) {
-                                        i = 0;
-                                        j = 0;
-                                        k++;
-                                    }
-                                }
-                                
-                            }
-                            if (k < m_size.z) m_indexesComplete.push_back(k);
-                        }
-                        
-                        // Construit la grille après suppression 
-                        BlockContainer::Container_t map;
-                        if (m_indexesComplete.size() != 0) {
-                            for (auto const& [vec, col] : m_grid) {
-                                if (std::find(m_indexesComplete.begin(),m_indexesComplete.end(),vec.z) == m_indexesComplete.end()) {
-                                    size_t diff = count_if(m_indexesComplete.begin(),m_indexesComplete.end(),[vec](unsigned val) {return val < vec.z;});
-                                    map.insert(std::make_pair(Vector3D<BlockContainer::Absolute_t>(Vector3D<BlockContainer::Relative_t>(vec)-Vector3D<BlockContainer::Relative_t>(0,0,diff)),col));
-                                }   
-                            }
+        // Getters and Setters
 
-                            m_score = m_score + std::pow((Score_t) 2, m_indexesComplete.size());
-                            m_grid = BlockContainer(map);
-                        }
-                        m_state = State::GENERATING_NEW_BLOCK;
-                        break;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(750));
-            }
-        }
-        
-    public:
-        bool isPaused() const {
-            return m_isPaused;
-        }
-        void translate(const Vector3D<Shape::Relative_t>& v) {
-            if(m_state == State::MOVING_BLOCK && m_curShape.canTranslate(v,m_grid,m_size)) m_curShape.translate(v);
-        }
+        /**
+         * @brief Getter for score
+         * @return Current Score
+         */
+        Score_t getScore() const;
 
-        void rotate(Shape::ROTATION_AXIS ax, Shape::ROTATION_DIRECTION dir) {
-            if(m_state == State::MOVING_BLOCK && m_curShape.canRotate(ax,dir,m_grid,m_size)) m_curShape.rotate(ax,dir);
-        }
 
-        void dropUntilHit() {
-            if(m_state == State::MOVING_BLOCK) {
-                Vector3D<Shape::Relative_t> down(0,0,-1);
-                while (m_curShape.canTranslate(down,m_grid,m_size)) {
-                    m_curShape.translate(down);
-                }
-                m_state = State::LOSE_CHECK;  
-            }
-        }
+        /**
+         * @brief Getter for Size
+         * @return Size
+         */
+        Size_t getSize() const;
 
-        bool isGameLose() const;
-    
-    public:
-        inline Shape getCurrentShape() const {
-            return m_curShape;
-        }
-
-        inline Shape getNextShape() const {
-            return m_nextShape;
-        }
-
-        inline BlockContainer getBlockContainer() const {
-            return m_grid;
-        }
 
         inline void setCurrentShape(const Shape& shape) {
             m_curShape = shape;
@@ -232,57 +196,23 @@ class GameCore {
             m_nextShape = shape;
         }
 
-        inline void setBlockContainer(const BlockContainer& blkContainer) {
-            m_grid = blkContainer;
-        }
 
-        inline void setIsPaused(const bool& isPaused) {
-            m_isPaused = isPaused;
-        }
-
-        inline void setState(const State& state) {
-            m_state = state;
-        }
-
-        inline void setScore(const Score_t& score) {
-            m_score = score;
-        }
-
-        inline void setSize(const Size_t& size) {
-            m_size = size;
-        }
+        // SFML Compatibility 
+        /**
+         * @brief Compatibility with SFML Networking. 
+         * @param pack : An SFML packet 
+         * @param core : GameCore to be added to the packet.
+         * @return Updated SFML Packet with data of the GameCore append to it.
+         */
+        friend sf::Packet& operator << (sf::Packet&, const GameCore&);
+        
+        /**
+         * @brief Compatibility with SFML Networking. 
+         * @param pack : An SFML packet with a GameCore to be extracted. 
+         * @param core : extacted GameCore from the Packet
+         * @return Updated SFML Packet without the data of the GameCore.
+         */
+        friend sf::Packet& operator >> (sf::Packet&, GameCore&);
 
         
 };
-
-inline sf::Packet& operator<< (sf::Packet& packet, const GameCore& gc) {
-    return packet << gc.isPaused() << gc.getSize() << gc.getScore() << gc.getState() << gc.getCurrentShape() << gc.getNextShape() << gc.getBlockContainer();
-}
-
-
-inline sf::Packet& operator >>(sf::Packet& packet, GameCore& gc)
-{
-    bool isPaused;
-    packet >> isPaused;
-    gc.setIsPaused(isPaused);
-    GameCore::Size_t size;
-    packet >> size;
-    gc.setSize(size);
-    GameCore::Score_t score; 
-    packet >> score; 
-    gc.setScore(score);
-    int tmp;
-    packet >> tmp;
-    GameCore::State state = (GameCore::State) tmp;
-    gc.setState(state);
-    Shape curShape = Shape(Vector3D<Shape::Absolute_t>());
-    packet >> curShape;
-    gc.setCurrentShape(curShape);
-    Shape nextShape = Shape(Vector3D<Shape::Absolute_t>());
-    packet >> nextShape;
-    gc.setNextShape(nextShape);
-    BlockContainer blkContainer;
-    packet >> blkContainer;
-    gc.setBlockContainer(blkContainer);
-    return packet;
-}

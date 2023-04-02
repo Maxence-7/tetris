@@ -157,3 +157,27 @@ Shape Shape::getRandomShape(Vector3D<BlockContainer::Absolute_t> gridSize) {
 bool Shape::isOccupied(const Vector3D<Absolute_t>& pos) const {
     return ((BlockContainer) *this).isOccupied(pos);   
 }
+
+sf::Packet& operator<< (sf::Packet& packet, const Shape& shape)
+{
+    packet << shape.m_pos << ((unsigned) shape.size());
+    for (auto const &[key, value] : shape.m_data) {
+        packet << key << value;
+    }
+    
+    return packet;
+}
+
+
+sf::Packet& operator >>(sf::Packet& packet, Shape& shape) {
+    unsigned tmp; 
+    packet >> shape.m_pos >> tmp;
+    size_t size = (size_t) tmp;
+    Vector3D<Shape::Relative_t> key;
+    Shape::Value_t value;
+    for (size_t i = 0; i < size; i++) {
+        packet >> key >> value;
+        shape.m_data.insert(std::make_pair(key,value));
+    }
+    return packet;
+}

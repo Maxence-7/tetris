@@ -6,7 +6,7 @@ ClientCore::~ClientCore() {};
  bool ClientCore::initConnection(sf::IpAddress target) {
         sf::Socket::Status status = m_sock.connect(target,m_port);
         if (status == sf::Socket::Done) {
-            int tmp; 
+            unsigned tmp; 
             sf::Packet pack;
             m_sock.receive(pack);
             pack >> tmp;

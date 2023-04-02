@@ -18,7 +18,7 @@ bool ServerCore::connectToClients() {
                 m_selector.add(m_sockets[rank]);
 
                 sf::Packet sendPack;
-                sendPack << SIZE << m_size;
+                sendPack << ((unsigned) SIZE) << m_size;
                 m_sockets[rank].send(sendPack);
                 
 
