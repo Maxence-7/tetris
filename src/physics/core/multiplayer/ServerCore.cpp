@@ -34,6 +34,7 @@ bool ServerCore::connectToClients() {
                 namePack >> name;
                 m_names.insert(std::make_pair(ip,name));
                 rank++;
+                               
             }
         }
         sendAllGamesToAll();

@@ -175,6 +175,7 @@ sf::Packet& operator >>(sf::Packet& packet, Shape& shape) {
     size_t size = (size_t) tmp;
     Vector3D<Shape::Relative_t> key;
     Shape::Value_t value;
+    shape.m_data.clear();
     for (size_t i = 0; i < size; i++) {
         packet >> key >> value;
         shape.m_data.insert(std::make_pair(key,value));

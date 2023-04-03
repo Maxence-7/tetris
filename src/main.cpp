@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
                     sf::IpAddress ip(vm["client"].as<std::string>());
                     bool success = ptr->initConnection(ip);
                     if (success) {
-                    corePtr = std::dynamic_pointer_cast<GameCore>(ptr);
+                        corePtr = std::dynamic_pointer_cast<GameCore>(ptr);
                     }
 
                     
@@ -233,27 +233,3 @@ int main(int argc, char *argv[]) {
         std::cerr << ex.what() << '\n';
     }
 }
-
-/*
-int BLA(int argc, char** argv) {
-    std::cout << "entering bla" << std::endl;
-    // Start GameCore
-    std::thread coreThread(&GameCore::startThread,corePtr);
-    // INIT RENDERER
-    //rd = Renderer(argc, argv, corePtr);
-    rdPtr = std::make_shared<Renderer>(argc,argv,corePtr);
-    glutSetWindow(rdPtr->getParentWin());
-    rdPtr->setDisplayFunc(renderLoopGrid);
-    glutSetWindow(rdPtr->getScoreWin());
-    rdPtr->setDisplayFunc(renderLoopScore);
-    glutSetWindow(rdPtr->getPreviewWin());
-    rdPtr->setDisplayFunc(renderLoopPreview);
-    glutSetWindow(rdPtr->getParentWin());
-    glutMotionFunc(onMove);
-    glutMouseFunc(onClick);
-    glutKeyboardFunc(processNormalKeys);
-    glutSpecialFunc(processSpecialKeys);
-    glutMainLoop();
-    return 0;
-}
-*/
