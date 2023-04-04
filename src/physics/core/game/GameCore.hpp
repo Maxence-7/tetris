@@ -2,6 +2,7 @@
 #include "../../containers/Shape.hpp"
 #include "../../containers/BlockContainer.hpp"
 #include "../../utils/Vector3D.hpp"
+#include "../sound/SoundCore.hpp"
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <thread>
@@ -41,6 +42,7 @@ class GameCore {
         Score_t m_score;
         BlockContainer m_grid;
         std::vector<unsigned> m_indexesComplete;
+        SoundCore m_soundCore();
     protected:
         Size_t m_size;
         Shape m_curShape; 
@@ -59,7 +61,7 @@ class GameCore {
          * @param  size : Size of the game
          * @attention In case of a 2D game, a 3D vector must be specified and the y coordinate of size must be equal to one.
          */
-        GameCore(const Size_t&); 
+        explicit GameCore(const Size_t&); 
 
         GameCore(const GameCore&);
         ~GameCore();
