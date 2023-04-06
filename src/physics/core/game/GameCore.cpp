@@ -60,40 +60,39 @@ void GameCore::start() {
                         break;
 
                     case CHECKING_COMPLETE_LINES:                    
-                        m_indexesComplete.clear();
-
-                        
+                        m_indexesComplete = std::vector<unsigned>(m_size.z+1,0);
                         for (size_t k = 0; k < m_size.z; k++) {
+                            bool isSurfFull = true; 
                             for (size_t i = 0; i < m_size.x; i++) {
                                 for (size_t j = 0; j < m_size.y; j++) {
-                                    if (!m_grid.isOccupied(Vector3D<BlockContainer::Absolute_t>(i,j,k)) && k < m_size.z) {
-                                        i = 0;
-                                        j = 0;
-                                        k++;
+                                    if (!m_grid.isOccupied(Vector3D<BlockContainer::Absolute_t>(i,j,k))) {
+                                        i = m_size.x + 1;
+                                        j = m_size.y + 1;
+                                        isSurfFull = false;
                                     }
+                                    
                                 }
-                                
+                                m_indexesComplete[k+1] = m_indexesComplete[k] + (unsigned) isSurfFull;
                             }
-                            if (k < m_size.z) m_indexesComplete.push_back(k);
                         }
-                        
+
                         // Construit la grille après suppression 
                         BlockContainer::Container_t map;
-                        if (m_indexesComplete.size() != 0) {
+                        if (m_indexesComplete[m_size.z] != 0) {
                             for (auto const& [vec, col] : m_grid) {
-                                if (std::find(m_indexesComplete.begin(),m_indexesComplete.end(),vec.z) == m_indexesComplete.end()) {
-                                    size_t diff = count_if(m_indexesComplete.begin(),m_indexesComplete.end(),[vec](unsigned val) {return val < vec.z;});
-                                    map.insert(std::make_pair(Vector3D<BlockContainer::Absolute_t>(Vector3D<BlockContainer::Relative_t>(vec)-Vector3D<BlockContainer::Relative_t>(0,0,diff)),col));
-                                }   
+                                if (m_indexesComplete[vec.z+1] == m_indexesComplete[vec.z]) {
+                                    map.insert(std::make_pair(Vector3D<BlockContainer::Absolute_t>(Vector3D<BlockContainer::Relative_t>(vec)-Vector3D<BlockContainer::Relative_t>(0,0,m_indexesComplete[vec.z+1])),col));
+                                }
                             }
+                                    
 
-                            m_score = m_score + std::pow((Score_t) 2, m_indexesComplete.size());
+                            m_score = m_score + std::pow((Score_t) 2, m_indexesComplete[m_size.z]);
                             m_grid = BlockContainer(map);
                         }
                         m_state = State::GENERATING_NEW_BLOCK;
                         break;
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds(750));
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
             }
         }
     }
