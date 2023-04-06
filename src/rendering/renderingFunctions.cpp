@@ -61,24 +61,6 @@ void drawLine3D(const Vector3D<double>& vect1, const Vector3D<double>& vect2) {
     glutSwapBuffers();
 }
 
-/*
-void drawBorders() {
-    drawLine3D(Vector3D<double>(2.5,2.5,-0.5),Vector3D<double>(2.5,-2.5,-0.5));
-    drawLine3D(Vector3D<double>(2.5,-2.5,-0.5),Vector3D<double>(-2.5,-2.5,-0.5));
-    drawLine3D(Vector3D<double>(-2.5,-2.5,-0.5),Vector3D<double>(-2.5,2.5,-0.5));
-    drawLine3D(Vector3D<double>(-2.5,2.5,-0.5),Vector3D<double>(2.5,2.5,-0.5));
-
-    drawLine3D(Vector3D<double>(2.5,2.5,-0.5),Vector3D<double>(2.5,2.5,24.5));
-    drawLine3D(Vector3D<double>(2.5,-2.5,-0.5),Vector3D<double>(2.5,-2.5,24.5));
-    drawLine3D(Vector3D<double>(-2.5,-2.5,-0.5),Vector3D<double>(-2.5,-2.5,24.5));
-    drawLine3D(Vector3D<double>(-2.5,2.5,-0.5),Vector3D<double>(-2.5,2.5,24.5));
-
-    drawLine3D(Vector3D<double>(2.5,2.5,24.5),Vector3D<double>(2.5,-2.5,24.5));
-    drawLine3D(Vector3D<double>(2.5,-2.5,24.5),Vector3D<double>(-2.5,-2.5,24.5));
-    drawLine3D(Vector3D<double>(-2.5,-2.5,24.5),Vector3D<double>(-2.5,2.5,24.5));
-    drawLine3D(Vector3D<double>(-2.5,2.5,24.5),Vector3D<double>(2.5,2.5,24.5));
-}*/ 
-
 void drawBorders(Vector3D<double>& vec) {
     double x = vec.x/2;
     double y = vec.y/2;

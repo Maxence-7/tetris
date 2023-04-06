@@ -12,20 +12,21 @@ sudo apt-get install libboost-all-dev
 
 ## Compilation
 
-Compilation
 ```bash
 make
 ```
 
 ## Execution
+
 Use the following command to show executions options :  
+
 ```bash
 ./output/tetris -h
 ```
 
 ## Controls
 
-Here are the control for an AZERTY layout : 
+Here are the control for an AZERTY layout :
  
 | Key                  | Usage                                                              |
 |----------------------|--------------------------------------------------------------------|
@@ -46,4 +47,4 @@ Here are the control for an AZERTY layout :
 
 * [OpenGL](https://programminggems.wordpress.com/2019/11/27/getting-started-with-opengl-from-c-c/)
 * [SFML](https://www.sfml-dev.org/index-fr.php)
-* [BOOST](https://www.boost.org/)    
+* [BOOST](https://www.boost.org/)
